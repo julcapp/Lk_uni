@@ -2,8 +2,10 @@ const { isAllowedEmail } = require('../services/email.service');
 
 function validatePhoneBody(req, res, next) {
   const { phone } = req.body;
-  if (!phone || !/^[\d+\s()-]{10,20}$/.test(phone)) {
-    return res.status(400).json({ error: 'Укажите корректный номер телефона' });
+  const digits = String(phone || '').replace(/\D/g, '');
+  const normalized = digits.startsWith('7') || digits.startsWith('8') ? digits.slice(1) : digits;
+  if (!phone || !/^[\d+()\- ]+$/.test(phone) || normalized.length !== 10) {
+    return res.status(400).json({ error: 'Укажите номер телефона в формате +7 и 10 цифр, без букв и лишних символов' });
   }
   next();
 }

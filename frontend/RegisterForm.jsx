@@ -27,9 +27,30 @@ const OAUTH_PROVIDERS = [
   { id: 'sberid', label: 'СберID' },
 ];
 
+const PHONE_PREFIX = '+7 ';
+
+function formatPhoneDigits(digits) {
+  const d = digits.slice(0, 10);
+  let out = '+7';
+  if (d.length > 0) out += ' ' + d.slice(0, 3);
+  if (d.length > 3) out += ' ' + d.slice(3, 6);
+  if (d.length > 6) out += '-' + d.slice(6, 8);
+  if (d.length > 8) out += '-' + d.slice(8, 10);
+  return out;
+}
+
+function extractPhoneDigits(rawValue) {
+  let digits = rawValue.replace(/\D/g, '');
+  // страна всегда 7 — убираем случайно введённые 7/8 в начале, оставляем только сам номер
+  if (digits.startsWith('7') || digits.startsWith('8')) {
+    digits = digits.slice(1);
+  }
+  return digits.slice(0, 10);
+}
+
 export default function RegisterForm({ apiBase = '/api/auth' }) {
   const [step, setStep] = useState(STEPS.PHONE_INPUT);
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(PHONE_PREFIX);
   const [email, setEmail] = useState('');
   const [phoneCode, setPhoneCode] = useState('');
   const [emailCode, setEmailCode] = useState('');
@@ -50,11 +71,24 @@ export default function RegisterForm({ apiBase = '/api/auth' }) {
     return data;
   }
 
+  function handlePhoneChange(e) {
+    const digits = extractPhoneDigits(e.target.value);
+    setPhone(formatPhoneDigits(digits));
+  }
+
+  function handlePhoneKeyDown(e) {
+    // не даём стереть фиксированный префикс "+7 "
+    if (e.key === 'Backspace' && e.target.selectionStart <= PHONE_PREFIX.length) {
+      e.preventDefault();
+    }
+  }
+
   function handlePhoneSubmit(e) {
     e.preventDefault();
     setError('');
-    if (!/^[\d+\s()-]{10,20}$/.test(phone)) {
-      setError('Проверьте номер телефона');
+    const digits = extractPhoneDigits(phone);
+    if (digits.length !== 10) {
+      setError('Введите номер телефона полностью — 10 цифр после +7');
       return;
     }
     setStep(STEPS.PHONE_CONFIRM);
@@ -148,9 +182,11 @@ export default function RegisterForm({ apiBase = '/api/auth' }) {
             id="phone"
             className="reg-input"
             type="tel"
+            inputMode="numeric"
             placeholder="+7 900 000-00-00"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
+            onKeyDown={handlePhoneKeyDown}
             autoFocus
           />
           <button className="reg-button" type="submit">Продолжить</button>
