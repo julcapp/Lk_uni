@@ -1,0 +1,212 @@
+.reg-card {
+  --reg-bg: #ffffff;
+  --reg-border: #e4e4e7;
+  --reg-text: #18181b;
+  --reg-muted: #71717a;
+  --reg-accent: #2563eb;
+  --reg-accent-hover: #1d4ed8;
+  --reg-error-bg: #fef2f2;
+  --reg-error-text: #b91c1c;
+
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 32px;
+  background: var(--reg-bg);
+  border: 1px solid var(--reg-border);
+  border-radius: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.reg-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.reg-progress__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  color: var(--reg-muted);
+  font-size: 12px;
+}
+
+.reg-progress__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--reg-border);
+}
+
+.reg-progress__step.is-active .reg-progress__dot {
+  background: var(--reg-accent);
+}
+
+.reg-progress__step.is-active {
+  color: var(--reg-text);
+}
+
+.reg-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--reg-text);
+}
+
+.reg-text {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--reg-muted);
+  line-height: 1.5;
+}
+
+.reg-hint {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  color: var(--reg-accent);
+}
+
+.reg-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.reg-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--reg-text);
+  margin-bottom: 6px;
+}
+
+.reg-input {
+  border: 1px solid var(--reg-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.reg-input:focus {
+  border-color: var(--reg-accent);
+}
+
+.reg-input--code {
+  letter-spacing: 6px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.reg-phone-display {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  padding: 14px;
+  background: #f4f4f5;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.reg-row {
+  display: flex;
+  gap: 10px;
+}
+
+.reg-button {
+  background: var(--reg-accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex: 1;
+}
+
+.reg-button:hover:not(:disabled) {
+  background: var(--reg-accent-hover);
+}
+
+.reg-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reg-button--ghost {
+  background: transparent;
+  color: var(--reg-text);
+  border: 1px solid var(--reg-border);
+}
+
+.reg-button--ghost:hover {
+  background: #f4f4f5;
+}
+
+.reg-error {
+  background: var(--reg-error-bg);
+  color: var(--reg-error-text);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.reg-done {
+  text-align: center;
+  align-items: center;
+}
+
+.reg-oauth {
+  margin-top: 24px;
+}
+
+.reg-oauth__divider {
+  text-align: center;
+  font-size: 12px;
+  color: var(--reg-muted);
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.reg-oauth__divider::before,
+.reg-oauth__divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: var(--reg-border);
+}
+
+.reg-oauth__divider::before { left: 0; }
+.reg-oauth__divider::after { right: 0; }
+
+.reg-oauth__row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reg-oauth__button {
+  flex: 1;
+  min-width: 90px;
+  padding: 10px 12px;
+  border: 1px solid var(--reg-border);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.reg-oauth__button:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
