@@ -69,6 +69,17 @@
   color: var(--reg-accent);
 }
 
+.reg-notice {
+  font-size: 13px;
+  color: var(--reg-text);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 12px 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
 .reg-form {
   display: flex;
   flex-direction: column;

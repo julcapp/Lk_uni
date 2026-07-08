@@ -162,6 +162,12 @@ export default function RegisterForm({ apiBase = '/api/auth' }) {
           <h2 className="reg-title">Проверьте номер</h2>
           <p className="reg-text">Всё верно?</p>
           <div className="reg-phone-display">{phone}</div>
+          <p className="reg-notice">
+            Как только вы подтвердите номер, вам поступит короткий звонок с одного
+            из служебных номеров. <strong>Не отклоняйте и не сбрасывайте вызов</strong> —
+            просто дождитесь его окончания. Затем посмотрите последние 6 цифр номера,
+            с которого звонили, и введите их на следующем шаге.
+          </p>
           <div className="reg-row">
             <button className="reg-button reg-button--ghost" onClick={() => setStep(STEPS.PHONE_INPUT)}>
               Исправить
