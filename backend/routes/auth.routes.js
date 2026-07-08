@@ -13,7 +13,7 @@ const emailLimiter = rateLimit({ windowMs: 60 * 1000, max: 5 });
 router.post('/phone/request-call', callLimiter, validatePhoneBody, ctrl.requestPhoneCall);
 router.post('/phone/verify-call', ctrl.verifyPhoneCall);
 
-// Шаг 2: email (только @yuodomen.ru)
+// Шаг 2: email (только .ru/.su/.рф)
 router.post('/email/request-code', emailLimiter, validateEmailBody, ctrl.requestEmailCode);
 router.post('/email/verify-code', ctrl.verifyEmailCode);
 

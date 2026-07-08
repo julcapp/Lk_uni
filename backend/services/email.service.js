@@ -2,7 +2,11 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const pool = require('../config/db');
 
-const ALLOWED_DOMAIN = (process.env.ALLOWED_EMAIL_DOMAIN || 'yuodomen.ru').toLowerCase();
+// Национальные зоны РФ: .ru, .su, .рф (в punycode — xn--p1ai)
+const ALLOWED_TLDS = (process.env.ALLOWED_EMAIL_TLDS || 'ru,su,рф,xn--p1ai')
+  .split(',')
+  .map((t) => t.trim().toLowerCase())
+  .filter(Boolean);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -16,7 +20,10 @@ const transporter = nodemailer.createTransport({
 
 function isAllowedEmail(email) {
   const domain = String(email).split('@')[1]?.toLowerCase();
-  return domain === ALLOWED_DOMAIN;
+  if (!domain) return false;
+  const labels = domain.split('.');
+  const tld = labels[labels.length - 1];
+  return ALLOWED_TLDS.includes(tld);
 }
 
 function generateCode() {
@@ -29,7 +36,7 @@ function hashCode(code) {
 
 async function sendVerificationCode(email, meta = {}) {
   if (!isAllowedEmail(email)) {
-    throw new Error(`Регистрация возможна только с почтой в домене @${ALLOWED_DOMAIN}`);
+    throw new Error(`Регистрация возможна только с почтой в российской зоне (.ru, .su, .рф)`);
   }
 
   const code = generateCode();
@@ -88,4 +95,4 @@ async function verifyCode(email, enteredCode) {
   return { email, verified: true };
 }
 
-module.exports = { isAllowedEmail, sendVerificationCode, verifyCode, ALLOWED_DOMAIN };
+module.exports = { isAllowedEmail, sendVerificationCode, verifyCode, ALLOWED_TLDS };

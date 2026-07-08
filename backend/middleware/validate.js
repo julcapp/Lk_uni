@@ -1,4 +1,4 @@
-const { isAllowedEmail, ALLOWED_DOMAIN } = require('../services/email.service');
+const { isAllowedEmail } = require('../services/email.service');
 
 function validatePhoneBody(req, res, next) {
   const { phone } = req.body;
@@ -14,7 +14,7 @@ function validateEmailBody(req, res, next) {
     return res.status(400).json({ error: 'Укажите корректный email' });
   }
   if (!isAllowedEmail(email)) {
-    return res.status(400).json({ error: `Регистрация возможна только с почтой в домене @${ALLOWED_DOMAIN}` });
+    return res.status(400).json({ error: 'Регистрация возможна только с почтой в российской зоне (.ru, .su, .рф)' });
   }
   next();
 }

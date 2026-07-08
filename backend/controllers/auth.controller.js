@@ -47,7 +47,7 @@ async function verifyPhoneCall(req, res) {
   }
 }
 
-// ---------- Шаг 2: email (@yuodomen.ru) ----------
+// ---------- Шаг 2: email (зона .ru/.su/.рф) ----------
 
 async function requestEmailCode(req, res) {
   try {

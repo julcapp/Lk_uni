@@ -3,7 +3,7 @@ import './RegisterForm.css';
 
 /**
  * Типовая форма регистрации личного кабинета.
- * Шаги: телефон -> звонок-подтверждение -> email (@yuodomen.ru) -> код с почты -> готово.
+ * Шаги: телефон -> звонок-подтверждение -> email (зона .ru/.su/.рф) -> код с почты -> готово.
  * Плюс блок "или войти через" с расширяемым списком провайдеров (VK/MAX/Telegram/SberID).
  *
  * Настраивается через проп apiBase — базовый URL бэкенда (/api/auth по умолчанию).
@@ -204,13 +204,13 @@ export default function RegisterForm({ apiBase = '/api/auth' }) {
       {step === STEPS.EMAIL_INPUT && (
         <form onSubmit={handleEmailSubmit} className="reg-form">
           <h2 className="reg-title">Рабочая почта</h2>
-          <p className="reg-text">Укажите почту в домене @yuodomen.ru</p>
+          <p className="reg-text">Укажите почту в российской зоне (.ru, .su или .рф)</p>
           <label className="reg-label" htmlFor="email">Email</label>
           <input
             id="email"
             className="reg-input"
             type="email"
-            placeholder="ivanov@yuodomen.ru"
+            placeholder="ivanov@example.ru"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoFocus
