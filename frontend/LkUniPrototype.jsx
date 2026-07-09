@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import './LkUniPrototype.css';
+import './LkUniPrototypeHints.css';
 
 const SCREENS = {
   LOGIN: 'LOGIN',
@@ -10,6 +11,12 @@ const SCREENS = {
   RECOVERY_OPTIONS: 'RECOVERY_OPTIONS',
   PROFILE: 'PROFILE',
   ADMIN: 'ADMIN',
+};
+
+const PROJECT_CONTEXT = {
+  name: 'Демо-сервис Lk_uni',
+  slug: 'lk_uni_demo',
+  description: 'Данная форма применяется к сайту / проекту: Демо-сервис Lk_uni.',
 };
 
 const providers = [
@@ -30,6 +37,30 @@ const linkedIdentities = [
 
 function ProviderIcon({ children }) {
   return <span className="lk-provider-icon">{children}</span>;
+}
+
+function HelpLabel({ children, hint }) {
+  return (
+    <label className="lk-label lk-label-help">
+      <span>{children}</span>
+      <span className="lk-help" tabIndex="0" aria-label={hint}>?</span>
+      <span className="lk-tooltip">{hint}</span>
+    </label>
+  );
+}
+
+function FieldHint({ children }) {
+  return <p className="lk-field-hint">{children}</p>;
+}
+
+function ProjectNotice() {
+  return (
+    <div className="lk-project-notice">
+      <span>Сервис</span>
+      <strong>{PROJECT_CONTEXT.name}</strong>
+      <p>{PROJECT_CONTEXT.description}</p>
+    </div>
+  );
 }
 
 function Header({ screen, setScreen }) {
@@ -100,12 +131,12 @@ function AuthShell({ eyebrow, title, subtitle, children, side }) {
 function ProviderButtons({ onMax }) {
   return (
     <div className="lk-provider-grid">
-      <button type="button"><ProviderIcon>@</ProviderIcon>Email</button>
-      <button type="button"><ProviderIcon>+7</ProviderIcon>Телефон</button>
-      <button type="button" onClick={onMax}><ProviderIcon>M</ProviderIcon>MAX</button>
-      <button type="button"><ProviderIcon>T</ProviderIcon>Telegram</button>
-      <button type="button"><ProviderIcon>VK</ProviderIcon>VK ID</button>
-      <button type="button"><ProviderIcon>S</ProviderIcon>SberID</button>
+      <button type="button" title="Вход по коду, который будет отправлен на подтверждённую почту"><ProviderIcon>@</ProviderIcon>Email</button>
+      <button type="button" title="Вход по номеру телефона через код или звонок"><ProviderIcon>+7</ProviderIcon>Телефон</button>
+      <button type="button" title="Открыть MAX-бота и подтвердить вход" onClick={onMax}><ProviderIcon>M</ProviderIcon>MAX</button>
+      <button type="button" title="Вход через подтверждённый Telegram"><ProviderIcon>T</ProviderIcon>Telegram</button>
+      <button type="button" title="Вход через VK ID"><ProviderIcon>VK</ProviderIcon>VK ID</button>
+      <button type="button" title="Вход через SberID, если канал включён проектом"><ProviderIcon>S</ProviderIcon>SberID</button>
     </div>
   );
 }
@@ -117,8 +148,12 @@ function LoginScreen({ setScreen }) {
       title="Добро пожаловать"
       subtitle="Войдите любым подключённым способом. Логин не обязателен — система найдёт пользователя через подтверждённую identity."
     >
-      <label className="lk-label">Email, телефон или идентификатор</label>
+      <ProjectNotice />
+      <HelpLabel hint="Введите email, номер телефона или другой идентификатор, который ранее был привязан к вашему аккаунту.">
+        Email, телефон или идентификатор
+      </HelpLabel>
       <input className="lk-input" placeholder="ivan@example.ru или +7 900 000-00-00" />
+      <FieldHint>Можно указать любой известный способ входа: email, телефон, MAX, Telegram или VK ID.</FieldHint>
       <button className="lk-primary" type="button">Продолжить</button>
       <div className="lk-divider"><span>или войти через</span></div>
       <ProviderButtons onMax={() => setScreen(SCREENS.MAX)} />
@@ -137,20 +172,25 @@ function RegisterScreen({ setScreen }) {
       title="Создание аккаунта"
       subtitle="Сначала создаём профиль, затем подтверждаем пользователя одним из разрешённых каналов проекта."
     >
-      <div className="lk-two-fields">
-        <div>
-          <label className="lk-label">Имя</label>
-          <input className="lk-input" placeholder="Иван" />
-        </div>
-        <div>
-          <label className="lk-label">Проект</label>
-          <input className="lk-input" value="utimoshi" readOnly />
-        </div>
-      </div>
-      <label className="lk-label">Email</label>
+      <ProjectNotice />
+      <HelpLabel hint="Укажите имя, по которому сервис будет обращаться к вам в личном кабинете и уведомлениях.">
+        Имя
+      </HelpLabel>
+      <input className="lk-input" placeholder="Иван" />
+      <FieldHint>Лучше указать настоящее имя или привычное обращение. Это поле видно только внутри сервиса.</FieldHint>
+
+      <HelpLabel hint="Введите рабочую или личную почту. На неё можно отправить код подтверждения и уведомления безопасности.">
+        Email
+      </HelpLabel>
       <input className="lk-input" placeholder="ivan@example.ru" />
-      <label className="lk-label">Телефон</label>
+      <FieldHint>Почта потребуется для подтверждения регистрации и восстановления доступа.</FieldHint>
+
+      <HelpLabel hint="Введите номер телефона в российском формате. Он может использоваться для входа, подтверждения и восстановления доступа.">
+        Телефон
+      </HelpLabel>
       <input className="lk-input" placeholder="+7 900 000-00-00" />
+      <FieldHint>Номер будет подтверждаться кодом, звонком или другим разрешённым каналом проекта.</FieldHint>
+
       <label className="lk-check">
         <input type="checkbox" defaultChecked />
         <span>Согласен на обработку персональных данных</span>
@@ -176,16 +216,17 @@ function VerifyScreen({ setScreen }) {
         </>
       }
     >
+      <ProjectNotice />
       <div className="lk-method-list">
-        <button type="button">
+        <button type="button" title="На почту будет отправлен короткий код подтверждения.">
           <strong>Email</strong>
           <span>Отправим 6-значный код на i***@mail.ru</span>
         </button>
-        <button type="button">
+        <button type="button" title="Подтверждение по телефону может быть выполнено кодом или звонком.">
           <strong>Телефон</strong>
           <span>Подтверждение звонком или кодом</span>
         </button>
-        <button type="button" onClick={() => setScreen(SCREENS.MAX)}>
+        <button type="button" title="Пользователь открывает MAX-бота и подтверждает действие там." onClick={() => setScreen(SCREENS.MAX)}>
           <strong>MAX</strong>
           <span>Открыть MAX-бота и подтвердить регистрацию</span>
         </button>
@@ -210,6 +251,7 @@ function MaxScreen({ setScreen }) {
         </>
       }
     >
+      <ProjectNotice />
       <div className="lk-max-box">
         <div className="lk-qr-placeholder">MAX</div>
         <div>
@@ -217,6 +259,7 @@ function MaxScreen({ setScreen }) {
           <p>challenge_id: 8f2a...c19<br />purpose: registration / login / recovery</p>
         </div>
       </div>
+      <FieldHint>Если MAX не установлен, выберите другой способ подтверждения. Обязательность MAX задаётся настройками проекта.</FieldHint>
       <button className="lk-primary" type="button">Открыть MAX</button>
       <button className="lk-secondary" type="button" onClick={() => setScreen(SCREENS.VERIFY)}>
         Выбрать другой способ
@@ -232,8 +275,12 @@ function RecoveryStartScreen({ setScreen }) {
       title="Не удаётся войти?"
       subtitle="Введите любой известный идентификатор. Мы не раскрываем наличие аккаунта и покажем только безопасные варианты восстановления."
     >
-      <label className="lk-label">Email, телефон, MAX, Telegram или VK ID</label>
+      <ProjectNotice />
+      <HelpLabel hint="Введите то, что помните: email, телефон или привязанный внешний канал. Система найдёт доступные варианты восстановления.">
+        Email, телефон, MAX, Telegram или VK ID
+      </HelpLabel>
       <input className="lk-input" placeholder="ivan@example.ru или +7 900 000-00-00" />
+      <FieldHint>Мы не показываем открыто, существует ли аккаунт, чтобы защитить пользователей от перебора.</FieldHint>
       <button className="lk-primary" type="button" onClick={() => setScreen(SCREENS.RECOVERY_OPTIONS)}>
         Найти способы восстановления
       </button>
@@ -249,11 +296,12 @@ function RecoveryOptionsScreen({ setScreen }) {
       title="Выберите подтверждённый канал"
       subtitle="Данные маскируются. Восстановление возможно только через ранее подтверждённую identity."
     >
+      <ProjectNotice />
       <div className="lk-method-list">
-        <button type="button"><strong>Email</strong><span>i***@mail.ru</span></button>
-        <button type="button"><strong>Телефон</strong><span>+7 *** *** 12 34</span></button>
-        <button type="button" onClick={() => setScreen(SCREENS.MAX)}><strong>MAX</strong><span>Аккаунт MAX привязан</span></button>
-        <button type="button"><strong>Telegram</strong><span>Аккаунт Telegram привязан</span></button>
+        <button type="button" title="Код восстановления будет отправлен на подтверждённую почту."><strong>Email</strong><span>i***@mail.ru</span></button>
+        <button type="button" title="Код восстановления будет отправлен на подтверждённый телефон."><strong>Телефон</strong><span>+7 *** *** 12 34</span></button>
+        <button type="button" title="Восстановление через ранее привязанный MAX-аккаунт." onClick={() => setScreen(SCREENS.MAX)}><strong>MAX</strong><span>Аккаунт MAX привязан</span></button>
+        <button type="button" title="Восстановление через ранее привязанный Telegram."><strong>Telegram</strong><span>Аккаунт Telegram привязан</span></button>
       </div>
     </AuthShell>
   );
@@ -268,13 +316,13 @@ function ProfileScreen({ setScreen }) {
           <div>
             <div className="lk-eyebrow">Профиль пользователя</div>
             <h1>Иван Иванов</h1>
-            <p>status: active · project: utimoshi</p>
+            <p>status: active · {PROJECT_CONTEXT.description}</p>
           </div>
         </div>
         <h2>Связанные способы входа</h2>
         <div className="lk-identity-list">
           {linkedIdentities.map((item) => (
-            <div className="lk-identity" key={item.provider}>
+            <div className="lk-identity" key={item.provider} title="Привязанный способ входа и восстановления доступа">
               <div>
                 <strong>{item.provider}</strong>
                 <span>{item.value}</span>
@@ -302,10 +350,10 @@ function AdminScreen() {
       <section className="lk-card lk-admin-main">
         <div className="lk-eyebrow">Администрирование проекта</div>
         <h1>Настройки авторизации</h1>
-        <p className="lk-subtitle">Проект сам определяет, какие каналы регистрации, входа и восстановления доступны пользователю.</p>
+        <p className="lk-subtitle">Проект сам определяет, какие каналы регистрации, входа и восстановления доступны пользователю. В пользовательской форме проект не редактируется, он задаётся настройками внедрения.</p>
         <div className="lk-admin-grid">
           {providers.map((provider) => (
-            <div className="lk-provider-setting" key={provider.id}>
+            <div className="lk-provider-setting" key={provider.id} title="Включить или отключить канал для конкретного проекта">
               <div>
                 <strong>{provider.label}</strong>
                 <span>{provider.description}</span>
@@ -321,7 +369,7 @@ function AdminScreen() {
       <aside className="lk-card lk-profile-side">
         <h2>Policy</h2>
         <p>{enabledCount} каналов включено</p>
-        <pre className="lk-code">{`mode: one_of\nchannels:\n  - email\n  - phone\n  - max`}</pre>
+        <pre className="lk-code">{`project: ${PROJECT_CONTEXT.slug}\nmode: one_of\nchannels:\n  - email\n  - phone\n  - max`}</pre>
         <button className="lk-primary" type="button">Сохранить настройки</button>
       </aside>
     </main>
