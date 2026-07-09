@@ -2,20 +2,47 @@
 
 ## 1. Что добавлено
 
-Для проверки интерфейса добавлено отдельное React/Vite preview-приложение в папке `frontend`.
+Для проверки интерфейса добавлено нормальное React/Vite preview-приложение.
 
 Файлы:
 
 ```text
+package.json
 frontend/package.json
 frontend/index.html
 frontend/src/main.jsx
+frontend/src/App.jsx
 frontend/LkUniPrototype.jsx
 frontend/LkUniPrototype.css
 vercel.json
 ```
 
-## 2. Локальный запуск
+## 2. Локальный запуск из корня репозитория
+
+Находясь в папке:
+
+```text
+C:\Users\iav\Documents\GitHub\Lk_uni
+```
+
+выполнить:
+
+```bash
+npm install
+npm run dev
+```
+
+После запуска открыть адрес в браузере:
+
+```text
+http://localhost:5173
+```
+
+Важно: адрес нужно открывать в браузере, не вводить его как команду в PowerShell.
+
+## 3. Локальный запуск из папки frontend
+
+Альтернативный вариант:
 
 ```bash
 cd frontend
@@ -23,22 +50,30 @@ npm install
 npm run dev
 ```
 
-После запуска открыть адрес, который покажет Vite, обычно:
+После запуска открыть:
 
 ```text
 http://localhost:5173
 ```
 
-## 3. Проверка production build
+## 4. Проверка production build
+
+Из корня репозитория:
 
 ```bash
-cd frontend
-npm install
 npm run build
 npm run preview
 ```
 
-## 4. Публикация на Vercel
+или из `frontend`:
+
+```bash
+cd frontend
+npm run build
+npm run preview
+```
+
+## 5. Публикация на Vercel
 
 ### Вариант через сайт Vercel
 
@@ -64,22 +99,6 @@ frontend/dist
 
 ```text
 https://lk-uni-*.vercel.app
-```
-
-## 5. Публикация через Vercel CLI
-
-```bash
-npm install -g vercel
-vercel login
-vercel
-```
-
-При вопросах:
-
-```text
-Root Directory: ./
-Build Command: cd frontend && npm install && npm run build
-Output Directory: frontend/dist
 ```
 
 ## 6. Назначение preview
