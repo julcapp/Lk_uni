@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "event": "identity.verified",
+      "user_id": "usr_demo_001",
+      "severity": "info"
+    },
+    {
+      "event": "session.created",
+      "user_id": "usr_demo_001",
+      "severity": "info"
+    }
+  ]
+}
