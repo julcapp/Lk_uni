@@ -1,0 +1,21 @@
+scenario: recovery
+version: v0.1
+
+steps:
+  - request_password_reset
+  - hide_user_existence
+  - select_verified_channel
+  - verify_identity
+  - create_new_password
+  - revoke_old_sessions
+  - send_security_notifications
+  - return_to_login
+
+channels:
+  - email
+  - max_demo
+  - telegram_demo
+
+security:
+  terminate_sessions_after_reset: true
+  temporary_password_mode: optional
