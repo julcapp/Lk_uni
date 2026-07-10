@@ -1,0 +1,14 @@
+{
+  "notifications": [
+    {
+      "type": "registration.completed",
+      "channel": "email",
+      "status": "delivered"
+    },
+    {
+      "type": "identity.verified",
+      "channel": "max_demo",
+      "status": "delivered"
+    }
+  ]
+}
