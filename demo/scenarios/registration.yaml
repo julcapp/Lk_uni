@@ -1,0 +1,13 @@
+scenario: registration
+name: DevHub Demo Registration
+
+steps:
+  - welcome
+  - enter_name
+  - validate_email
+  - accept_demo_consent
+  - select_provider
+  - max_demo_verification
+  - create_identity
+  - send_notifications
+  - open_cabinet
