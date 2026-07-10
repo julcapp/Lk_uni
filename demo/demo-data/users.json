@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "id": "usr_demo_001",
+      "name": "Demo User",
+      "email": "example@mail.ru",
+      "phone": "+79999999999",
+      "tenant": "devhub-demo",
+      "status": "verified",
+      "providers": [
+        "email",
+        "max_demo"
+      ]
+    }
+  ]
+}
