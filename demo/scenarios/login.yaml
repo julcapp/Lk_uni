@@ -1,0 +1,10 @@
+scenario: login
+name: DevHub Demo Login
+
+steps:
+  - enter_credentials
+  - validate_identity
+  - create_session
+  - check_security_policy
+  - send_login_notification
+  - open_cabinet
