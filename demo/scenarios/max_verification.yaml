@@ -1,0 +1,19 @@
+scenario: max_verification
+version: v0.1
+
+provider: MAX Demo
+
+steps:
+  - create_verification_request
+  - show_permission_screen
+  - wait_user_confirmation
+  - validate_provider_response
+  - update_identity_status
+  - create_audit_event
+  - notify_user
+
+states:
+  - pending
+  - approved
+  - rejected
+  - expired
