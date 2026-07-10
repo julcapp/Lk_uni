@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "type": "identity.verified",
+      "user": "usr_demo_001",
+      "source": "max_demo"
+    },
+    {
+      "type": "session.created",
+      "user": "usr_demo_001",
+      "timeout": "30m"
+    }
+  ]
+}
