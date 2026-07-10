@@ -1,0 +1,20 @@
+[
+  {
+    "type": "email",
+    "event": "registration.completed",
+    "title": "Регистрация завершена",
+    "status": "delivered"
+  },
+  {
+    "type": "max",
+    "event": "identity.verified",
+    "title": "MAX подтверждение успешно",
+    "status": "delivered"
+  },
+  {
+    "type": "security",
+    "event": "session.created",
+    "title": "Создана новая сессия",
+    "status": "delivered"
+  }
+]
