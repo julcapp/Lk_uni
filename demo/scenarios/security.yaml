@@ -1,0 +1,21 @@
+scenario: security
+version: v0.1
+
+steps:
+  - create_session
+  - apply_security_policy
+  - track_device
+  - monitor_activity
+  - generate_security_events
+  - send_notifications
+
+policies:
+  idle_timeout: 30m
+  max_login_attempts: 5
+  notify_new_device: true
+
+security_events:
+  - session.created
+  - session.revoked
+  - suspicious.activity
+  - password.changed
