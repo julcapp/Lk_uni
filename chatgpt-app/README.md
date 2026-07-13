@@ -21,6 +21,8 @@ MCP endpoint: `http://localhost:8787/mcp`.
 
 Для подключения к ChatGPT endpoint должен быть доступен по HTTPS. Используйте Secure MCP Tunnel, ngrok или Cloudflare Tunnel, затем укажите публичный URL с путём `/mcp` в режиме разработчика ChatGPT.
 
+Пошаговая инструкция для безопасного теста в Windows: [docs/CHATGPT_APP_TEST.md](../docs/CHATGPT_APP_TEST.md).
+
 ## Ограничения первой версии
 
 - Данные демонстрационные и хранятся в памяти процесса.
