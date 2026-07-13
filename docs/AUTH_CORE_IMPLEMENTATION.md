@@ -3,6 +3,7 @@
 ## Статус
 
 Первая рабочая вертикаль реализована в ветке `feature/auth-core-v1` поверх PostgreSQL.
+Старые MySQL controller/routes/services и runtime-зависимость `mysql2` удалены; точка входа backend использует только PostgreSQL.
 
 ## Маршруты
 
