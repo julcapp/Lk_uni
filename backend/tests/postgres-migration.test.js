@@ -47,6 +47,10 @@ async function main() {
 
     const settings = await knex('project_auth_settings').where({ project_id: projects[0].id });
     assert.equal(settings.length, 1, 'DevHub auth settings must be created');
+    const enabledProviders = typeof settings[0].enabled_providers === 'string'
+      ? JSON.parse(settings[0].enabled_providers)
+      : settings[0].enabled_providers;
+    assert.deepEqual(enabledProviders, ['email', 'phone', 'max', 'telegram', 'vk']);
     const requiredVerification = typeof settings[0].required_verification === 'string'
       ? JSON.parse(settings[0].required_verification)
       : settings[0].required_verification;
