@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lk-uni-postgres
+    restart: unless-stopped
+    environment:
+      # Только для локальной разработки. В production используются secrets.
+      POSTGRES_DB: lk_uni
+      POSTGRES_USER: lk_uni
+      POSTGRES_PASSWORD: lk_uni_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - lk_uni_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lk_uni -d lk_uni"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  lk_uni_postgres_data:
