@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "frontend"
+    "frontend",
+    "chatgpt-app"
   ],
   "scripts": {
     "dev": "npm --workspace frontend run dev",
     "build": "npm --workspace frontend run build",
-    "preview": "npm --workspace frontend run preview"
+    "preview": "npm --workspace frontend run preview",
+    "chatgpt:dev": "npm --workspace chatgpt-app run dev",
+    "chatgpt:start": "npm --workspace chatgpt-app start",
+    "chatgpt:check": "npm --workspace chatgpt-app run check"
   }
 }
