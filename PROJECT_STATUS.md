@@ -11,16 +11,17 @@
 |---|---:|---|
 | Продуктовая концепция | ✅ | Lk_uni определён как Identity Platform |
 | Архитектурные принципы | ✅ | Зафиксированы в DECISIONS и ADR |
-| PostgreSQL-модель | 🟡 | Реализованы Knex-миграции и seed DevHub; требуется прогон на PostgreSQL 16 |
+| PostgreSQL-модель | ✅ | Knex-миграции и seed DevHub проверены на PostgreSQL 16 в CI |
 | Core Preview | 🟡 | Рабочий React/Vite-прототип доступен локально |
 | DevHub Demo | 🟡 | Текущий приоритет разработки |
 | Режим «Экскурсия» | 🟡 | Сценарий согласован, требуется реализация |
 | Registration / Login / Recovery UX | 🟡 | Сценарии согласованы, требуется рабочая логика |
-| Session Management | 🟡 | Политики согласованы, код не завершён |
+| Session Management | 🟡 | Реализована первая вертикаль: rotation, logout, список и revoke своих сессий |
 | Communication Hub | 🟡 | Архитектура согласована, нужны Demo Inbox и mock-каналы |
 | Error Handling Center | 🟡 | Каталог и UX согласованы, требуется реализация |
 | Developer Sandbox | 🟡 | Концепция согласована, требуется UI-прототип |
 | API Contract | 🟡 | Базовый контракт создан, требуется OpenAPI |
+| Auth Core | 🟡 | Project-aware register/login, verification, `/me` и сессии реализованы; нужны боевые provider-адаптеры |
 | Production Core | ⚪ | Начинается после ревизии Demo v0.1 |
 | SDK | ⚪ | После утверждения Demo и API |
 | Lk_uni_Demo.exe | ⚪ | Цель после portable Demo v0.1 |

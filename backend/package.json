@@ -11,7 +11,8 @@
     "db:rollback": "knex --knexfile knexfile.js migrate:rollback",
     "db:seed": "knex --knexfile knexfile.js seed:run",
     "db:check": "node scripts/check-postgres.js",
-    "db:test": "node tests/postgres-migration.test.js"
+    "db:test": "node tests/postgres-migration.test.js",
+    "auth:test": "node tests/auth-core.integration.test.js"
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.4",
-    "pg-mem": "^3.0.5"
+    "pg-mem": "^3.0.5",
+    "supertest": "^7.1.4"
   }
 }

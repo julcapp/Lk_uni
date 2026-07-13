@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/postgresql-foundation
+      - feature/auth-core-v1
   pull_request:
     paths:
       - "backend/**"
@@ -39,6 +40,10 @@ jobs:
       DATABASE_SSL: "false"
       DB_POOL_MIN: 1
       DB_POOL_MAX: 4
+      JWT_ACCESS_SECRET: ci-access-secret-at-least-32-characters
+      JWT_REFRESH_SECRET: ci-refresh-secret-at-least-32-characters
+      CHALLENGE_SECRET: ci-challenge-secret-at-least-32-characters
+      AUTH_DEMO_MODE: "true"
 
     defaults:
       run:
@@ -61,11 +66,17 @@ jobs:
       - name: Run in-memory migration contract test
         run: npm run db:test
 
+      - name: Run in-memory Auth Core integration test
+        run: npm run auth:test
+
       - name: Apply migrations to PostgreSQL 16
         run: npm run db:migrate
 
       - name: Seed DevHub
         run: npm run db:seed
+
+      - name: Run Auth Core integration test on PostgreSQL 16
+        run: AUTH_TEST_DATABASE=real npm run auth:test
 
       - name: Check PostgreSQL connection
         run: npm run db:check
