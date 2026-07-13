@@ -5,7 +5,7 @@ exports.seed = async function seed(knex) {
       name: 'DevHub',
       status: 'active',
       branding: { primaryColor: '#2563eb' },
-      allowed_redirect_urls: [],
+      allowed_redirect_urls: JSON.stringify([]),
     })
     .onConflict('slug')
     .merge({ name: 'DevHub', status: 'active', updated_at: knex.fn.now() })
@@ -14,12 +14,12 @@ exports.seed = async function seed(knex) {
   await knex('project_auth_settings')
     .insert({
       project_id: project.id,
-      enabled_providers: ['email', 'phone', 'max', 'telegram', 'vk'],
+      enabled_providers: JSON.stringify(['email', 'phone', 'max', 'telegram', 'vk']),
       required_verification: { mode: 'one_of', channels: ['email', 'phone', 'max'] },
     })
     .onConflict('project_id')
     .merge({
-      enabled_providers: ['email', 'phone', 'max', 'telegram', 'vk'],
+      enabled_providers: JSON.stringify(['email', 'phone', 'max', 'telegram', 'vk']),
       required_verification: { mode: 'one_of', channels: ['email', 'phone', 'max'] },
       updated_at: knex.fn.now(),
     });
