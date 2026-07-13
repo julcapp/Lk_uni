@@ -33,20 +33,20 @@
 
 ### Этап 2. PostgreSQL
 
-- [ ] Добавить PostgreSQL schema.
-- [ ] Выбрать миграционный инструмент: Prisma или Knex.
+- [x] Добавить PostgreSQL schema.
+- [x] Выбрать миграционный инструмент: Knex + pg.
 - [ ] Перенести users.
 - [ ] Перенести verification attempts.
-- [ ] Добавить projects.
-- [ ] Добавить project_auth_settings.
-- [ ] Добавить auth_identities.
-- [ ] Добавить sessions.
-- [ ] Добавить refresh_tokens.
-- [ ] Добавить oauth_states.
-- [ ] Добавить provider_events.
-- [ ] Добавить recovery_requests.
-- [ ] Добавить recovery_attempts.
-- [ ] Добавить audit_log.
+- [x] Добавить projects.
+- [x] Добавить project_auth_settings.
+- [x] Добавить auth_identities.
+- [x] Добавить sessions.
+- [x] Добавить refresh_tokens.
+- [x] Добавить oauth_states.
+- [x] Добавить provider_events.
+- [x] Добавить recovery_requests.
+- [x] Добавить recovery_attempts.
+- [x] Добавить audit_log.
 
 ### Этап 3. Auth Core
 
