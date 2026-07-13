@@ -50,15 +50,15 @@
 
 ### Этап 3. Auth Core
 
-- [ ] Переписать db layer под PostgreSQL.
-- [ ] Реализовать project-aware регистрацию.
-- [ ] Реализовать login flow.
-- [ ] Реализовать `/me`.
-- [ ] Реализовать refresh token rotation.
-- [ ] Реализовать logout.
-- [ ] Реализовать revoke sessions.
-- [ ] Добавить rate limits.
-- [ ] Добавить audit events.
+- [x] Переписать db layer под PostgreSQL.
+- [x] Реализовать project-aware регистрацию.
+- [x] Реализовать login flow.
+- [x] Реализовать `/me`.
+- [x] Реализовать refresh token rotation.
+- [x] Реализовать logout.
+- [x] Реализовать revoke sessions.
+- [x] Добавить rate limits.
+- [x] Добавить базовые audit events.
 
 ### Этап 4. Verification Providers
 
