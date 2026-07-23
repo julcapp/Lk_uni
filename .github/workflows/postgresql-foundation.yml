@@ -81,6 +81,26 @@ jobs:
       - name: Check PostgreSQL connection
         run: npm run db:check
 
+      - name: Start backend and verify health endpoint
+        shell: bash
+        run: |
+          npm start > /tmp/lk-uni-backend.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
+
+          for attempt in {1..20}; do
+            if response=$(curl --fail --silent --show-error http://127.0.0.1:3000/health); then
+              echo "$response"
+              echo "$response" | grep -q '"ok":true'
+              echo "$response" | grep -q '"database":"postgresql"'
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/lk-uni-backend.log
+          exit 1
+
       - name: Roll back migration
         run: npm run db:rollback
 
