@@ -1,0 +1,35 @@
+# Changelog
+
+Все существенные изменения Lk_uni фиксируются в этом файле.
+
+Формат основан на принципах Keep a Changelog. Проект использует семантическое версионирование после начала публичных релизов.
+
+## [Unreleased]
+
+### Added
+
+- профессиональное позиционирование Lk_uni как open source продукта;
+- новое описание и официальный девиз проекта;
+- PRODUCT_VISION.md;
+- MANIFEST.md;
+- верхнеуровневый ROADMAP.md;
+- правила участия, безопасности и поддержки;
+- GitHub Issue и Pull Request templates.
+
+### Changed
+
+- README преобразован из технической справки в главную продуктовую страницу репозитория;
+- roadmap сфокусирован на простой интеграции готовой системы управления пользователями.
+
+## [0.1.0] — Foundation Preview
+
+### Added
+
+- Node.js / Express backend;
+- PostgreSQL migrations и seed;
+- project-aware Auth Core;
+- JWT access и refresh tokens;
+- session rotation и revoke;
+- audit events;
+- CI с PostgreSQL 16;
+- базовые интеграционные тесты.
