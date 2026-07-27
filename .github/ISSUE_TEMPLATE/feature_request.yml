@@ -1,0 +1,39 @@
+name: Предложение возможности
+description: Предложить улучшение продукта или developer experience
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую проблему решает предложение?
+      description: Опишите пользовательскую или интеграционную проблему, а не только желаемую реализацию.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Предлагаемое решение
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Рассмотренные альтернативы
+  - type: textarea
+    id: integration
+    attributes:
+      label: Как это упростит интеграцию?
+      description: Свяжите предложение с главным продуктовым критерием Lk_uni.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Проверка
+      options:
+        - label: Я проверил существующие Issues и Roadmap
+          required: true
+        - label: Предложение не требует публикации секретов или персональных данных
+          required: true
