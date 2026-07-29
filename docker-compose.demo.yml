@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lk_uni}
+      POSTGRES_USER: ${POSTGRES_USER:-lk_uni}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lk_uni_demo_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - lk_uni_demo_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lk_uni} -d ${POSTGRES_DB:-lk_uni}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    image: node:20.16.0-alpine
+    working_dir: /app
+    command: >-
+      sh -c "npm ci && npm run db:migrate && npm run db:seed && npm start"
+    environment:
+      NODE_ENV: demo
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-lk_uni}:${POSTGRES_PASSWORD:-lk_uni_demo_password}@postgres:5432/${POSTGRES_DB:-lk_uni}
+      JWT_SECRET: ${JWT_SECRET:-replace-for-non-demo-use}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-replace-for-non-demo-use-refresh}
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+volumes:
+  lk_uni_demo_postgres:
+  backend_node_modules:
