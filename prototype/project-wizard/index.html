@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lk_uni — создать мой проект</title>
+  <style>
+    :root{font-family:Inter,Arial,sans-serif;color:#172033;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#eef4ff,#f8fbff 48%,#f7f5ff)}button,input{font:inherit}.shell{min-height:100vh;display:grid;place-items:center;padding:24px}.app{width:min(1080px,100%);background:#fff;border:1px solid #e5eaf2;border-radius:28px;box-shadow:0 30px 80px rgba(35,54,95,.13);overflow:hidden}.top{display:flex;justify-content:space-between;align-items:center;padding:22px 30px;border-bottom:1px solid #edf0f5}.brand{font-weight:800;font-size:21px}.lang{border:1px solid #dce3ee;background:#fff;border-radius:12px;padding:9px 12px}.main{display:grid;grid-template-columns:240px 1fr;min-height:620px}.side{padding:30px 22px;background:#f8faff;border-right:1px solid #edf0f5}.step{display:flex;gap:12px;align-items:center;color:#7c8799;margin-bottom:22px}.step span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#e9eef7;font-weight:700}.step.active{color:#2458d3;font-weight:700}.step.active span,.step.done span{background:#2458d3;color:#fff}.content{padding:54px 64px}.eyebrow{color:#2458d3;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.08em}h1{font-size:42px;line-height:1.1;margin:12px 0 14px}.lead{font-size:18px;color:#667085;max-width:650px}.panel{margin-top:34px}.field{display:grid;gap:8px;margin-bottom:20px}.field label{font-weight:700}.field input{width:100%;padding:15px 16px;border:1px solid #ccd5e2;border-radius:14px;outline:none}.field input:focus{border-color:#2458d3;box-shadow:0 0 0 4px rgba(36,88,211,.1)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{padding:20px;border:1px solid #dfe5ef;border-radius:16px;background:#fff;text-align:left;cursor:pointer}.card:hover,.card.selected{border-color:#2458d3;background:#f1f5ff}.card b{display:block;margin-top:8px}.actions{display:flex;justify-content:space-between;gap:14px;margin-top:34px}.btn{border:0;border-radius:14px;padding:14px 22px;cursor:pointer;font-weight:800}.primary{background:#2458d3;color:#fff}.secondary{background:#edf1f7;color:#26334b}.hidden{display:none}.status{display:grid;gap:14px;margin-top:28px}.status div{padding:14px 16px;background:#f4f7fb;border-radius:12px}.success{font-size:72px}.dashboard{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.dash-card{padding:22px;border:1px solid #e1e7f0;border-radius:18px}.error{color:#b42318;font-size:14px;margin-top:-12px;margin-bottom:16px}@media(max-width:800px){.main{grid-template-columns:1fr}.side{display:none}.content{padding:34px 24px}.grid,.dashboard{grid-template-columns:1fr}h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<div class="shell"><div class="app">
+  <header class="top"><div class="brand">Lk_uni</div><button class="lang" id="lang">RU · EN</button></header>
+  <div class="main">
+    <aside class="side" id="steps"></aside>
+    <main class="content">
+      <section id="screen-0">
+        <div class="eyebrow">Проект за 5 минут</div><h1>Создайте цифровое пространство для своего проекта</h1>
+        <p class="lead">Без программирования, сложной настройки и собственного сайта. Ответьте на несколько вопросов — остальное платформа подготовит сама.</p>
+        <div class="panel"><button class="btn primary" onclick="go(1)">Создать мой проект</button> <button class="btn secondary">Войти</button></div>
+      </section>
+      <section id="screen-1" class="hidden">
+        <div class="eyebrow">Шаг 1 из 4</div><h1>Как называется ваш проект?</h1><p class="lead">Это название увидят ваши сотрудники и клиенты.</p>
+        <div class="panel"><div class="field"><label for="projectName">Название проекта</label><input id="projectName" placeholder="Например, У Тимоши" /></div><div id="nameError" class="error hidden">Введите название проекта.</div></div>
+        <div class="actions"><button class="btn secondary" onclick="go(0)">Назад</button><button class="btn primary" onclick="nextName()">Продолжить</button></div>
+      </section>
+      <section id="screen-2" class="hidden">
+        <div class="eyebrow">Шаг 2 из 4</div><h1>Чем занимается ваш проект?</h1><p class="lead">Выберите ближайший вариант. Настройки можно будет изменить позже.</p>
+        <div class="panel grid" id="types"></div><div id="typeError" class="error hidden">Выберите направление проекта.</div>
+        <div class="actions"><button class="btn secondary" onclick="go(1)">Назад</button><button class="btn primary" onclick="nextType()">Продолжить</button></div>
+      </section>
+      <section id="screen-3" class="hidden">
+        <div class="eyebrow">Шаг 3 из 4</div><h1>Создадим владельца проекта</h1><p class="lead">Эти данные будут использоваться для первого входа.</p>
+        <div class="panel">
+          <div class="field"><label>Имя</label><input id="ownerName" placeholder="Александр" /></div>
+          <div class="field"><label>Email</label><input id="email" type="email" placeholder="name@example.ru" /></div>
+          <div class="field"><label>Пароль</label><input id="password" type="password" placeholder="Не менее 8 символов" /></div>
+          <div id="ownerError" class="error hidden">Заполните имя, корректный email и пароль не короче 8 символов.</div>
+        </div>
+        <div class="actions"><button class="btn secondary" onclick="go(2)">Назад</button><button class="btn primary" onclick="createProject()">Создать проект</button></div>
+      </section>
+      <section id="screen-4" class="hidden">
+        <div class="eyebrow">Шаг 4 из 4</div><h1>Создаём ваш проект…</h1><p class="lead">Обычно это занимает несколько секунд.</p><div class="status" id="status"></div>
+      </section>
+      <section id="screen-5" class="hidden">
+        <div class="success">✓</div><div class="eyebrow">Готово</div><h1><span id="resultName"></span> создан</h1><p class="lead">Ваше рабочее пространство готово. Можно перейти внутрь и продолжить настройку.</p>
+        <div class="actions"><button class="btn primary" onclick="go(6)">Перейти в проект</button></div>
+      </section>
+      <section id="screen-6" class="hidden">
+        <div class="eyebrow">Главная страница проекта</div><h1 id="dashboardTitle"></h1><p class="lead">Начните с одного простого действия.</p>
+        <div class="panel dashboard"><div class="dash-card"><h3>Клиенты</h3><p>Здесь появятся зарегистрированные пользователи.</p></div><div class="dash-card"><h3>Организация</h3><p>Основные сведения о вашем проекте.</p></div><div class="dash-card"><h3>Настройки</h3><p>Название, оформление и способы входа.</p></div><div class="dash-card"><h3>Добавить возможность</h3><p>Сотрудники, Telegram, лояльность и другие модули.</p></div></div>
+      </section>
+    </main>
+  </div>
+</div></div>
+<script>
+const state={step:0,type:null};
+const labels=['Начало','Название проекта','Направление','Владелец','Создание'];
+const types=[['🍦','Вендинг'],['🛒','Интернет-магазин'],['🏥','Медицинский центр'],['🏭','Производство'],['🔧','Услуги'],['📦','Другое']];
+function renderSteps(){document.getElementById('steps').innerHTML=labels.map((x,i)=>`<div class="step ${i===state.step?'active':''} ${i<state.step?'done':''}"><span>${i<state.step?'✓':i+1}</span>${x}</div>`).join('')}
+function go(n){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById('screen-'+n).classList.remove('hidden');state.step=Math.min(n,4);renderSteps()}
+function nextName(){const v=document.getElementById('projectName').value.trim();document.getElementById('nameError').classList.toggle('hidden',!!v);if(v)go(2)}
+function nextType(){document.getElementById('typeError').classList.toggle('hidden',!!state.type);if(state.type)go(3)}
+function createProject(){const n=document.getElementById('ownerName').value.trim(),e=document.getElementById('email').value.trim(),p=document.getElementById('password').value;const ok=n&&/^\S+@\S+\.\S+$/.test(e)&&p.length>=8;document.getElementById('ownerError').classList.toggle('hidden',ok);if(!ok)return;go(4);const items=['Создаём организацию','Создаём владельца','Настраиваем безопасность','Готовим личный кабинет'];const box=document.getElementById('status');box.innerHTML='';items.forEach((x,i)=>setTimeout(()=>{box.innerHTML+=`<div>✓ ${x}</div>`;if(i===items.length-1)setTimeout(finish,500)},500*(i+1)))}
+function finish(){const name=document.getElementById('projectName').value.trim();document.getElementById('resultName').textContent='«'+name+'»';document.getElementById('dashboardTitle').textContent=name;go(5)}
+document.getElementById('types').innerHTML=types.map(([i,t])=>`<button class="card" data-type="${t}"><span style="font-size:28px">${i}</span><b>${t}</b></button>`).join('');
+document.getElementById('types').addEventListener('click',e=>{const c=e.target.closest('.card');if(!c)return;document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');state.type=c.dataset.type});
+renderSteps();
+</script>
+</body>
+</html>
