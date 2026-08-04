@@ -89,6 +89,28 @@ async function main() {
     assert.ok(settings.settings);
     assert.ok(audit);
 
+    const loggedIn = await request(app)
+      .post('/api/v1/auth/password-login')
+      .set('x-device-name', 'Password login integration test')
+      .send({ email, password: 'password123' })
+      .expect(200);
+
+    assert.equal(loggedIn.body.user.id, userId);
+    assert.equal(loggedIn.body.workspace.id, projectId);
+    assert.ok(loggedIn.body.tokens.accessToken);
+    assert.ok(loggedIn.body.tokens.refreshToken);
+
+    const loginAudit = await db('audit_log')
+      .where({ project_id: projectId, user_id: userId, action: 'user.password_login.succeeded' })
+      .first();
+    assert.ok(loginAudit);
+
+    const badLogin = await request(app)
+      .post('/api/v1/auth/password-login')
+      .send({ email, password: 'wrong-password' })
+      .expect(401);
+    assert.equal(badLogin.body.code, 'INVALID_CREDENTIALS');
+
     const beforeDuplicate = await counts(db);
 
     const duplicate = await request(app)
@@ -112,7 +134,7 @@ async function main() {
 
     assert.deepEqual(await counts(db), beforeDuplicate, 'Validation error must roll back the whole workspace transaction');
 
-    console.log('Project Creation integration test passed: workspace, owner, session, audit and rollback');
+    console.log('Project Creation integration test passed: workspace, password login, session, audit and rollback');
   } finally {
     await db.destroy();
   }
