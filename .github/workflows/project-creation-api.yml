@@ -1,0 +1,74 @@
+name: Project Creation API
+
+on:
+  push:
+    branches:
+      - feature/project-creation-api-v1
+    paths:
+      - "backend/**"
+      - ".github/workflows/project-creation-api.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/project-creation-api.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  project-creation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: lk_uni_test
+          POSTGRES_USER: lk_uni
+          POSTGRES_PASSWORD: lk_uni_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lk_uni -d lk_uni_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://lk_uni:lk_uni_test@127.0.0.1:5432/lk_uni_test
+      DATABASE_SSL: "false"
+      DB_POOL_MIN: 1
+      DB_POOL_MAX: 4
+      JWT_ACCESS_SECRET: test-access-secret-at-least-32-characters
+      JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-characters
+      CHALLENGE_SECRET: test-challenge-secret-at-least-32-characters
+      PROJECT_TEST_DATABASE: real
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npm run db:migrate
+
+      - name: Run Project Creation integration test
+        run: npm run project:test
+
+      - name: Check database connection
+        run: npm run db:check
