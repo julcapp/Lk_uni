@@ -1,6 +1,7 @@
 const express = require('express');
 const { authenticate } = require('./auth.middleware');
 const service = require('./auth.service');
+const { passwordLogin } = require('./password-login.service');
 
 function normalizeIp(ip) {
   return String(ip || '').startsWith('::ffff:') ? String(ip).slice(7) : (ip || null);
@@ -52,6 +53,13 @@ function createAuthRouter({ db }) {
     try {
       requireFields(req.body, ['projectSlug', 'provider', 'login']);
       res.status(202).json(await service.login(db, req.body, meta(req)));
+    } catch (error) { next(error); }
+  });
+
+  router.post('/password-login', async (req, res, next) => {
+    try {
+      requireFields(req.body, ['email', 'password']);
+      res.json(await passwordLogin(db, req.body, meta(req)));
     } catch (error) { next(error); }
   });
 
