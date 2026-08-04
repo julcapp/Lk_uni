@@ -12,7 +12,8 @@
     "db:seed": "knex --knexfile knexfile.js seed:run",
     "db:check": "node scripts/check-postgres.js",
     "db:test": "node tests/postgres-migration.test.js",
-    "auth:test": "node tests/auth-core.integration.test.js"
+    "auth:test": "node tests/auth-core.integration.test.js",
+    "project:test": "node tests/project-creation.integration.test.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
