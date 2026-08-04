@@ -1,3 +1,4 @@
+const path = require('node:path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { createAuthRouter } = require('./modules/auth/auth.routes');
@@ -26,6 +27,10 @@ function createApp({ db }) {
 
   app.use('/api/v1/projects', createProjectRouter({ db }));
   app.use('/api/v1/auth', authLimiter, createAuthRouter({ db }));
+
+  const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
+  app.use('/create-project', express.static(wizardDirectory));
+  app.get('/', (req, res) => res.redirect('/create-project/'));
 
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
