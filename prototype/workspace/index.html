@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lk_uni — рабочее пространство</title>
+  <style>
+    :root{font-family:Inter,Arial,sans-serif;color:#172033;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;background:#f4f7fb}.top{height:68px;background:#fff;border-bottom:1px solid #e6ebf2;display:flex;align-items:center;justify-content:space-between;padding:0 28px}.brand{font-size:22px;font-weight:800}.user{display:flex;gap:12px;align-items:center}.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:800;cursor:pointer}.logout{background:#edf1f7;color:#26334b}.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 68px)}.side{background:#fff;border-right:1px solid #e6ebf2;padding:24px 18px}.nav{display:grid;gap:8px}.nav a{padding:12px 14px;border-radius:12px;color:#465166;text-decoration:none;font-weight:700}.nav a.active,.nav a:hover{background:#eef4ff;color:#2458d3}.main{padding:34px}.eyebrow{color:#2458d3;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}h1{font-size:38px;margin:10px 0 8px}.lead{color:#667085;margin:0 0 28px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:22px}.card h2{margin:0 0 8px;font-size:21px}.card p{margin:0;color:#667085}.status{margin-top:28px;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:22px}.status ul{margin:12px 0 0;padding-left:20px;color:#465166}.error{max-width:680px;margin:80px auto;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:28px;text-align:center}.hidden{display:none}@media(max-width:800px){.layout{grid-template-columns:1fr}.side{display:none}.main{padding:24px}.grid{grid-template-columns:1fr}.top{padding:0 18px}}
+  </style>
+</head>
+<body>
+<header class="top"><div class="brand">Lk_uni</div><div class="user"><span id="userName"></span><button id="logoutButton" class="btn logout">Выйти</button></div></header>
+<div id="protected" class="layout hidden">
+  <aside class="side"><nav class="nav"><a class="active" href="/workspace/">Главная</a><a href="#">Профиль</a><a href="#">Организация</a><a href="#">Участники</a></nav></aside>
+  <main class="main">
+    <div class="eyebrow">Рабочее пространство</div>
+    <h1 id="workspaceName">Ваш проект</h1>
+    <p class="lead">Начните с базовой настройки проекта.</p>
+    <div class="grid">
+      <section class="card"><h2>Профиль владельца</h2><p>Имя, email, язык и безопасность учётной записи.</p></section>
+      <section class="card"><h2>Организация</h2><p>Название, описание, контакты и оформление.</p></section>
+      <section class="card"><h2>Участники</h2><p>Добавление сотрудников и настройка ролей.</p></section>
+      <section class="card"><h2>Клиенты</h2><p>Первый пользовательский модуль платформы.</p></section>
+    </div>
+    <section class="status"><strong>Статус подготовки</strong><ul><li>Рабочее пространство создано.</li><li>Владелец назначен.</li><li>Сессия активна.</li><li>Следующий шаг: заполнить профиль и организацию.</li></ul></section>
+  </main>
+</div>
+<section id="sessionError" class="error hidden"><h1>Сессия не найдена</h1><p>Войдите снова, чтобы открыть рабочее пространство.</p><button class="btn" onclick="location.href='/login/'">Перейти ко входу</button></section>
+<script>
+function pickStorage(){if(localStorage.getItem('lkuni.refreshToken'))return localStorage;if(sessionStorage.getItem('lkuni.refreshToken'))return sessionStorage;return null}
+const storage=pickStorage();
+const protectedBlock=document.getElementById('protected');
+const errorBlock=document.getElementById('sessionError');
+if(!storage){errorBlock.classList.remove('hidden')}else{let user={},workspace={};try{user=JSON.parse(storage.getItem('lkuni.user')||'{}');workspace=JSON.parse(storage.getItem('lkuni.workspace')||'{}')}catch(e){}document.getElementById('userName').textContent=user.displayName||user.display_name||'Владелец';document.getElementById('workspaceName').textContent=workspace.name||'Ваш проект';protectedBlock.classList.remove('hidden')}
+document.getElementById('logoutButton').addEventListener('click',async()=>{if(!storage){location.href='/login/';return}const refreshToken=storage.getItem('lkuni.refreshToken');try{if(refreshToken)await fetch('/api/v1/auth/logout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({refreshToken})})}finally{['lkuni.accessToken','lkuni.refreshToken','lkuni.user','lkuni.workspace'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)});location.href='/login/'}});
+</script>
+</body>
+</html>
