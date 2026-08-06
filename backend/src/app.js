@@ -30,8 +30,10 @@ function createApp({ db }) {
 
   const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
   const loginDirectory = path.resolve(__dirname, '../../prototype/login');
+  const workspaceDirectory = path.resolve(__dirname, '../../prototype/workspace');
   app.use('/create-project', express.static(wizardDirectory));
   app.use('/login', express.static(loginDirectory));
+  app.use('/workspace', express.static(workspaceDirectory));
   app.get('/', (req, res) => res.redirect('/login/'));
 
   app.use((error, req, res, next) => {
