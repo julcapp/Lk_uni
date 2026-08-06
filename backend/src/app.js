@@ -29,8 +29,10 @@ function createApp({ db }) {
   app.use('/api/v1/auth', authLimiter, createAuthRouter({ db }));
 
   const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
+  const loginDirectory = path.resolve(__dirname, '../../prototype/login');
   app.use('/create-project', express.static(wizardDirectory));
-  app.get('/', (req, res) => res.redirect('/create-project/'));
+  app.use('/login', express.static(loginDirectory));
+  app.get('/', (req, res) => res.redirect('/login/'));
 
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
