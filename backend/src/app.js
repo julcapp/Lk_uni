@@ -31,9 +31,13 @@ function createApp({ db }) {
   const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
   const loginDirectory = path.resolve(__dirname, '../../prototype/login');
   const workspaceDirectory = path.resolve(__dirname, '../../prototype/workspace');
+  const forgotPasswordDirectory = path.resolve(__dirname, '../../prototype/forgot-password');
+  const resetPasswordDirectory = path.resolve(__dirname, '../../prototype/reset-password');
   app.use('/create-project', express.static(wizardDirectory));
   app.use('/login', express.static(loginDirectory));
   app.use('/workspace', express.static(workspaceDirectory));
+  app.use('/forgot-password', express.static(forgotPasswordDirectory));
+  app.use('/reset-password', express.static(resetPasswordDirectory));
   app.get('/', (req, res) => res.redirect('/login/'));
 
   app.use((error, req, res, next) => {
