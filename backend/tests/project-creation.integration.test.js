@@ -137,6 +137,9 @@ async function main() {
       .expect(200);
     assert.equal(validated.body.valid, true);
 
+    const activeBeforeReset = await db('sessions').where({ user_id: userId, status: 'active' }).whereNull('revoked_at');
+    assert.ok(activeBeforeReset.length >= 2);
+
     const resetDone = await request(app)
       .post('/api/v1/auth/password-reset/confirm')
       .set('x-device-name', 'Password reset integration test')
@@ -147,6 +150,9 @@ async function main() {
     assert.equal(resetDone.body.workspace.id, projectId);
     assert.ok(resetDone.body.tokens.accessToken);
     assert.ok(resetDone.body.tokens.refreshToken);
+
+    const activeAfterReset = await db('sessions').where({ user_id: userId, status: 'active' }).whereNull('revoked_at');
+    assert.equal(activeAfterReset.length, 1, 'Password reset must revoke previous active sessions and create one new session');
 
     const reuse = await request(app)
       .post('/api/v1/auth/password-reset/confirm')
@@ -169,11 +175,6 @@ async function main() {
       .where({ project_id: projectId, user_id: userId, action: 'user.password_reset.completed' })
       .first();
     assert.ok(resetAudit);
-
-    const activeOldSessions = await db('sessions')
-      .where({ user_id: userId, status: 'active' })
-      .whereNotIn('id', [resetDone.body.tokens.sessionId || '00000000-0000-0000-0000-000000000000']);
-    assert.ok(activeOldSessions.length >= 1, 'New sessions may exist after reset; previous sessions were revoked before issuing reset session');
 
     const beforeDuplicate = await counts(db);
 
