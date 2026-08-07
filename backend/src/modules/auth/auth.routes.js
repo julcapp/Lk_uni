@@ -2,6 +2,11 @@ const express = require('express');
 const { authenticate } = require('./auth.middleware');
 const service = require('./auth.service');
 const { passwordLogin } = require('./password-login.service');
+const {
+  requestPasswordReset,
+  validatePasswordReset,
+  confirmPasswordReset,
+} = require('./password-reset.service');
 
 function normalizeIp(ip) {
   return String(ip || '').startsWith('::ffff:') ? String(ip).slice(7) : (ip || null);
@@ -60,6 +65,26 @@ function createAuthRouter({ db }) {
     try {
       requireFields(req.body, ['email', 'password']);
       res.json(await passwordLogin(db, req.body, meta(req)));
+    } catch (error) { next(error); }
+  });
+
+  router.post('/password-reset/request', async (req, res, next) => {
+    try {
+      requireFields(req.body, ['email']);
+      res.json(await requestPasswordReset(db, req.body, meta(req)));
+    } catch (error) { next(error); }
+  });
+
+  router.get('/password-reset/validate', async (req, res, next) => {
+    try {
+      res.json(await validatePasswordReset(db, req.query.token));
+    } catch (error) { next(error); }
+  });
+
+  router.post('/password-reset/confirm', async (req, res, next) => {
+    try {
+      requireFields(req.body, ['token', 'password']);
+      res.json(await confirmPasswordReset(db, req.body, meta(req)));
     } catch (error) { next(error); }
   });
 
