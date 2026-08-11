@@ -11,18 +11,18 @@
 <body>
 <header class="top"><div class="brand">Lk_uni</div><div class="user"><span id="userName"></span><button id="logoutButton" class="btn logout">Выйти</button></div></header>
 <div id="protected" class="layout hidden">
-  <aside class="side"><nav class="nav"><a class="active" href="/workspace/">Главная</a><a href="/profile/">Профиль</a><a href="#">Организация</a><a href="#">Участники</a></nav></aside>
+  <aside class="side"><nav class="nav"><a class="active" href="/workspace/">Главная</a><a href="/profile/">Профиль</a><a href="/organization/">Организация</a><a href="#">Участники</a></nav></aside>
   <main class="main">
     <div class="eyebrow">Рабочее пространство</div>
     <h1 id="workspaceName">Ваш проект</h1>
     <p class="lead">Начните с базовой настройки проекта.</p>
     <div class="grid">
       <a class="card" href="/profile/"><h2>Профиль владельца</h2><p>Имя, email, язык и безопасность учётной записи.</p></a>
-      <section class="card"><h2>Организация</h2><p>Название, описание, контакты и оформление.</p></section>
+      <a class="card" href="/organization/"><h2>Организация</h2><p>Название, описание, контакты и настройки.</p></a>
       <section class="card"><h2>Участники</h2><p>Добавление сотрудников и настройка ролей.</p></section>
       <section class="card"><h2>Клиенты</h2><p>Первый пользовательский модуль платформы.</p></section>
     </div>
-    <section class="status"><strong>Статус подготовки</strong><ul><li>Рабочее пространство создано.</li><li>Владелец назначен.</li><li>Сессия активна.</li><li>Профиль владельца доступен для настройки.</li></ul></section>
+    <section class="status"><strong>Статус подготовки</strong><ul><li>Рабочее пространство создано.</li><li>Владелец назначен.</li><li>Сессия активна.</li><li>Профиль и организация доступны для настройки.</li></ul></section>
   </main>
 </div>
 <section id="sessionError" class="error hidden"><h1>Сессия не найдена</h1><p>Войдите снова, чтобы открыть рабочее пространство.</p><button class="btn" onclick="location.href='/login/'">Перейти ко входу</button></section>
