@@ -6,6 +6,7 @@ const identityMigration = require('../db/migrations/202607130001_identity_founda
 const projectCreationMigration = require('../db/migrations/202608040001_project_creation_v1');
 const passwordResetMigration = require('../db/migrations/202608070001_password_reset');
 const profileCoreMigration = require('../db/migrations/202608110001_profile_core');
+const organizationCoreMigration = require('../db/migrations/202608110002_organization_core');
 
 process.env.JWT_ACCESS_SECRET ||= 'test-access-secret-at-least-32-characters';
 process.env.JWT_REFRESH_SECRET ||= 'test-refresh-secret-at-least-32-characters';
@@ -31,6 +32,7 @@ async function createDatabase() {
   await projectCreationMigration.up(db);
   await passwordResetMigration.up(db);
   await profileCoreMigration.up(db);
+  await organizationCoreMigration.up(db);
   return { db, ownsDatabase: true };
 }
 
@@ -178,6 +180,35 @@ async function main() {
     assert.equal(updatedSettings.body.timezone, 'Asia/Bangkok');
     assert.equal(updatedSettings.body.notifications, false);
 
+    const organizationRead = await request(app)
+      .get('/api/v1/organization')
+      .set('authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    assert.equal(organizationRead.body.organization.name, 'У Тимоши');
+    assert.equal(organizationRead.body.organization.role, 'OWNER');
+
+    const organizationUpdated = await request(app)
+      .patch('/api/v1/organization')
+      .set('authorization', `Bearer ${accessToken}`)
+      .send({
+        name: 'Клуб У Тимоши',
+        description: 'Семейный проект мягкого мороженого',
+        website: 'https://example.ru',
+        email: 'office@example.ru',
+        phone: '+7 900 111-22-33',
+        address: 'Москва',
+        language: 'ru',
+        timezone: 'Europe/Moscow',
+      })
+      .expect(200);
+    assert.equal(organizationUpdated.body.organization.name, 'Клуб У Тимоши');
+    assert.equal(organizationUpdated.body.organization.phone, '+7 900 111-22-33');
+
+    const organizationAudit = await db('audit_log')
+      .where({ project_id: projectId, user_id: userId, action: 'organization.updated' })
+      .first();
+    assert.ok(organizationAudit);
+
     const secondLogin = await request(app)
       .post('/api/v1/auth/password-login')
       .set('x-device-name', 'Secondary profile session')
@@ -230,7 +261,7 @@ async function main() {
       .expect(400);
     assert.deepEqual(await counts(db), beforeDuplicate, 'Validation error must roll back the whole workspace transaction');
 
-    console.log('Project Creation integration test passed: workspace, auth, password reset, profile core, sessions, audit and rollback');
+    console.log('Project Creation integration test passed: workspace, auth, password reset, profile core, organization core, sessions, audit and rollback');
   } finally {
     await db.destroy();
   }
