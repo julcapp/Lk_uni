@@ -32,13 +32,16 @@ function createApp({ db }) {
   app.use('/api/v1/profile', createProfileRouter({ db }));
   app.use('/api/v1/organization', createOrganizationRouter({ db }));
 
-  const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
-  const loginDirectory = path.resolve(__dirname, '../../prototype/login');
-  const workspaceDirectory = path.resolve(__dirname, '../../prototype/workspace');
-  const profileDirectory = path.resolve(__dirname, '../../prototype/profile');
-  const organizationDirectory = path.resolve(__dirname, '../../prototype/organization');
-  const forgotPasswordDirectory = path.resolve(__dirname, '../../prototype/forgot-password');
-  const resetPasswordDirectory = path.resolve(__dirname, '../../prototype/reset-password');
+  const prototypeDirectory = path.resolve(__dirname, '../../prototype');
+  const wizardDirectory = path.resolve(prototypeDirectory, 'project-wizard');
+  const loginDirectory = path.resolve(prototypeDirectory, 'login');
+  const workspaceDirectory = path.resolve(prototypeDirectory, 'workspace');
+  const profileDirectory = path.resolve(prototypeDirectory, 'profile');
+  const organizationDirectory = path.resolve(prototypeDirectory, 'organization');
+  const forgotPasswordDirectory = path.resolve(prototypeDirectory, 'forgot-password');
+  const resetPasswordDirectory = path.resolve(prototypeDirectory, 'reset-password');
+
+  app.get('/shared/i18n.js', (req, res) => res.sendFile(path.resolve(prototypeDirectory, 'i18n.js')));
   app.use('/create-project', express.static(wizardDirectory));
   app.use('/login', express.static(loginDirectory));
   app.use('/workspace', express.static(workspaceDirectory));
