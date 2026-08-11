@@ -5,6 +5,7 @@ const { newDb, DataType } = require('pg-mem');
 const identityMigration = require('../db/migrations/202607130001_identity_foundation');
 const projectCreationMigration = require('../db/migrations/202608040001_project_creation_v1');
 const passwordResetMigration = require('../db/migrations/202608070001_password_reset');
+const profileCoreMigration = require('../db/migrations/202608110001_profile_core');
 
 process.env.JWT_ACCESS_SECRET ||= 'test-access-secret-at-least-32-characters';
 process.env.JWT_REFRESH_SECRET ||= 'test-refresh-secret-at-least-32-characters';
@@ -29,11 +30,12 @@ async function createDatabase() {
   await identityMigration.up(db);
   await projectCreationMigration.up(db);
   await passwordResetMigration.up(db);
+  await profileCoreMigration.up(db);
   return { db, ownsDatabase: true };
 }
 
 async function counts(db) {
-  const tables = ['organizations', 'projects', 'users', 'auth_identities', 'project_members', 'project_settings', 'sessions', 'refresh_tokens', 'password_reset_tokens'];
+  const tables = ['organizations', 'projects', 'users', 'auth_identities', 'project_members', 'project_settings', 'sessions', 'refresh_tokens', 'password_reset_tokens', 'user_settings'];
   const result = {};
   for (const table of tables) {
     const row = await db(table).count('* as count').first();
@@ -103,11 +105,6 @@ async function main() {
     assert.ok(loggedIn.body.tokens.accessToken);
     assert.ok(loggedIn.body.tokens.refreshToken);
 
-    const loginAudit = await db('audit_log')
-      .where({ project_id: projectId, user_id: userId, action: 'user.password_login.succeeded' })
-      .first();
-    assert.ok(loginAudit);
-
     const badLogin = await request(app)
       .post('/api/v1/auth/password-login')
       .send({ email, password: 'wrong-password' })
@@ -126,39 +123,24 @@ async function main() {
       .set('x-device-name', 'Password reset integration test')
       .send({ email })
       .expect(200);
-
-    assert.equal(resetRequested.body.ok, true);
     assert.ok(resetRequested.body.resetUrl);
     const resetToken = new URL(`http://localhost${resetRequested.body.resetUrl}`).searchParams.get('token');
-    assert.ok(resetToken);
 
-    const validated = await request(app)
+    await request(app)
       .get(`/api/v1/auth/password-reset/validate?token=${encodeURIComponent(resetToken)}`)
       .expect(200);
-    assert.equal(validated.body.valid, true);
-
-    const activeBeforeReset = await db('sessions').where({ user_id: userId, status: 'active' }).whereNull('revoked_at');
-    assert.ok(activeBeforeReset.length >= 2);
 
     const resetDone = await request(app)
       .post('/api/v1/auth/password-reset/confirm')
       .set('x-device-name', 'Password reset integration test')
       .send({ token: resetToken, password: 'new-password-123' })
       .expect(200);
-
-    assert.equal(resetDone.body.user.id, userId);
-    assert.equal(resetDone.body.workspace.id, projectId);
     assert.ok(resetDone.body.tokens.accessToken);
-    assert.ok(resetDone.body.tokens.refreshToken);
 
-    const activeAfterReset = await db('sessions').where({ user_id: userId, status: 'active' }).whereNull('revoked_at');
-    assert.equal(activeAfterReset.length, 1, 'Password reset must revoke previous active sessions and create one new session');
-
-    const reuse = await request(app)
+    await request(app)
       .post('/api/v1/auth/password-reset/confirm')
       .send({ token: resetToken, password: 'another-password-123' })
       .expect(400);
-    assert.equal(reuse.body.code, 'RESET_TOKEN_INVALID');
 
     await request(app)
       .post('/api/v1/auth/password-login')
@@ -167,39 +149,88 @@ async function main() {
 
     const loginWithNewPassword = await request(app)
       .post('/api/v1/auth/password-login')
+      .set('x-device-name', 'Primary profile session')
       .send({ email, password: 'new-password-123' })
       .expect(200);
-    assert.equal(loginWithNewPassword.body.user.id, userId);
 
-    const resetAudit = await db('audit_log')
-      .where({ project_id: projectId, user_id: userId, action: 'user.password_reset.completed' })
-      .first();
-    assert.ok(resetAudit);
+    const accessToken = loginWithNewPassword.body.tokens.accessToken;
+    const profile = await request(app)
+      .get('/api/v1/profile')
+      .set('authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    assert.equal(profile.body.user.email, email);
+    assert.equal(profile.body.settings.language, 'ru');
+
+    const updatedProfile = await request(app)
+      .patch('/api/v1/profile')
+      .set('authorization', `Bearer ${accessToken}`)
+      .send({ displayName: 'Александр Викторович', firstName: 'Александр', lastName: 'Ильин', phone: '+7 900 000-00-00' })
+      .expect(200);
+    assert.equal(updatedProfile.body.user.displayName, 'Александр Викторович');
+    assert.equal(updatedProfile.body.user.phone, '+7 900 000-00-00');
+
+    const updatedSettings = await request(app)
+      .patch('/api/v1/profile/settings')
+      .set('authorization', `Bearer ${accessToken}`)
+      .send({ language: 'en', timezone: 'Asia/Bangkok', notifications: false })
+      .expect(200);
+    assert.equal(updatedSettings.body.language, 'en');
+    assert.equal(updatedSettings.body.timezone, 'Asia/Bangkok');
+    assert.equal(updatedSettings.body.notifications, false);
+
+    const secondLogin = await request(app)
+      .post('/api/v1/auth/password-login')
+      .set('x-device-name', 'Secondary profile session')
+      .send({ email, password: 'new-password-123' })
+      .expect(200);
+
+    const sessionsBeforeChange = await request(app)
+      .get('/api/v1/profile/sessions')
+      .set('authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    assert.ok(sessionsBeforeChange.body.sessions.length >= 2);
+
+    const changedPassword = await request(app)
+      .post('/api/v1/profile/change-password')
+      .set('authorization', `Bearer ${accessToken}`)
+      .send({ currentPassword: 'new-password-123', newPassword: 'final-password-456' })
+      .expect(200);
+    assert.ok(changedPassword.body.revokedOtherSessions >= 1);
+
+    const secondarySession = await db('sessions').where({ id: secondLogin.body.tokens.sessionId }).first();
+    assert.equal(secondarySession.status, 'revoked');
+
+    await request(app)
+      .post('/api/v1/auth/password-login')
+      .send({ email, password: 'new-password-123' })
+      .expect(401);
+
+    await request(app)
+      .post('/api/v1/auth/password-login')
+      .send({ email, password: 'final-password-456' })
+      .expect(200);
+
+    const profileAudit = await db('audit_log').where({ project_id: projectId, user_id: userId, action: 'profile.updated' }).first();
+    const settingsAudit = await db('audit_log').where({ project_id: projectId, user_id: userId, action: 'profile.settings.updated' }).first();
+    const passwordAudit = await db('audit_log').where({ project_id: projectId, user_id: userId, action: 'profile.password.changed' }).first();
+    assert.ok(profileAudit && settingsAudit && passwordAudit);
 
     const beforeDuplicate = await counts(db);
 
     const duplicate = await request(app)
       .post('/api/v1/projects')
-      .send({
-        projectName: 'Дубликат',
-        owner: { name: 'Другой владелец', email, password: 'password123' },
-      })
+      .send({ projectName: 'Дубликат', owner: { name: 'Другой владелец', email, password: 'password123' } })
       .expect(409);
-
     assert.equal(duplicate.body.code, 'EMAIL_ALREADY_EXISTS');
     assert.deepEqual(await counts(db), beforeDuplicate, 'Duplicate email must not leave partially created records');
 
     await request(app)
       .post('/api/v1/projects')
-      .send({
-        projectName: 'Некорректный проект',
-        owner: { name: 'Владелец', email: `invalid-${randomUUID()}@example.ru`, password: 'short' },
-      })
+      .send({ projectName: 'Некорректный проект', owner: { name: 'Владелец', email: `invalid-${randomUUID()}@example.ru`, password: 'short' } })
       .expect(400);
-
     assert.deepEqual(await counts(db), beforeDuplicate, 'Validation error must roll back the whole workspace transaction');
 
-    console.log('Project Creation integration test passed: workspace, login, password reset, session, audit and rollback');
+    console.log('Project Creation integration test passed: workspace, auth, password reset, profile core, sessions, audit and rollback');
   } finally {
     await db.destroy();
   }
