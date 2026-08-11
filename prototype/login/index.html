@@ -11,31 +11,30 @@
 <body>
 <div class="shell">
   <main class="card">
-    <div class="top"><div class="brand">Lk_uni</div><button class="lang" type="button">RU · EN</button></div>
-    <div class="eyebrow">Вход в рабочее пространство</div>
-    <h1>Добро пожаловать</h1>
-    <p class="lead">Введите email и пароль владельца проекта.</p>
+    <div class="top"><div class="brand">Lk_uni</div><button class="lang" id="lang" type="button">RU · EN</button></div>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="title"></h1>
+    <p class="lead" id="lead"></p>
     <div id="alert" class="alert hidden" role="alert"></div>
     <form id="loginForm" novalidate>
       <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required placeholder="name@example.ru"></div>
-      <div class="field"><label for="password">Пароль</label><input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="Не менее 8 символов"></div>
+      <div class="field"><label for="password" id="passwordLabel"></label><input id="password" type="password" autocomplete="current-password" minlength="8" required></div>
       <div class="row">
-        <label class="remember"><input id="remember" type="checkbox" checked> Запомнить меня</label>
-        <a class="link" href="/forgot-password/">Забыли пароль?</a>
+        <label class="remember"><input id="remember" type="checkbox" checked> <span id="rememberText"></span></label>
+        <a class="link" id="forgotLink" href="/forgot-password/"></a>
       </div>
-      <button id="submitButton" class="btn" type="submit">Войти</button>
+      <button id="submitButton" class="btn" type="submit"></button>
     </form>
-    <div class="footer">Нет проекта? <a class="link" href="/create-project/">Создать рабочее пространство</a></div>
+    <div class="footer"><span id="noProject"></span> <a class="link" id="createLink" href="/create-project/"></a></div>
   </main>
 </div>
+<script src="/shared/i18n.js"></script>
 <script>
-const form=document.getElementById('loginForm');
-const alertBox=document.getElementById('alert');
-const button=document.getElementById('submitButton');
-function showError(message){alertBox.textContent=message;alertBox.classList.remove('hidden')}
-function clearStoredSession(){['lkuni.accessToken','lkuni.refreshToken','lkuni.user','lkuni.workspace'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)})}
-function storeSession(data,remember){clearStoredSession();const storage=remember?localStorage:sessionStorage;storage.setItem('lkuni.accessToken',data.tokens?.accessToken||data.accessToken||'');storage.setItem('lkuni.refreshToken',data.tokens?.refreshToken||data.refreshToken||'');storage.setItem('lkuni.user',JSON.stringify(data.user||data.owner||{}));storage.setItem('lkuni.workspace',JSON.stringify(data.workspace||{}))}
-form.addEventListener('submit',async(event)=>{event.preventDefault();alertBox.classList.add('hidden');const email=document.getElementById('email').value.trim();const password=document.getElementById('password').value;if(!/^\S+@\S+\.\S+$/.test(email)||password.length<8){showError('Введите корректный email и пароль не короче 8 символов.');return}button.disabled=true;button.textContent='Входим…';try{const response=await fetch('/api/v1/auth/password-login',{method:'POST',headers:{'content-type':'application/json','x-device-name':'Lk_uni Web'},body:JSON.stringify({email,password})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'Неверный адрес электронной почты или пароль.');storeSession(data,document.getElementById('remember').checked);location.href='/workspace/'}catch(error){showError(error.message||'Не удалось выполнить вход. Попробуйте ещё раз.')}finally{button.disabled=false;button.textContent='Войти'}});
+const copy={ru:{title:'Lk_uni — вход',eyebrow:'Вход в рабочее пространство',heading:'Добро пожаловать',lead:'Введите email и пароль владельца проекта.',password:'Пароль',passwordPlaceholder:'Не менее 8 символов',remember:'Запомнить меня',forgot:'Забыли пароль?',submit:'Войти',working:'Входим…',noProject:'Нет проекта?',create:'Создать рабочее пространство',validation:'Введите корректный email и пароль не короче 8 символов.',invalid:'Неверный адрес электронной почты или пароль.',failed:'Не удалось выполнить вход. Попробуйте ещё раз.'},en:{title:'Lk_uni — sign in',eyebrow:'Workspace sign in',heading:'Welcome',lead:'Enter the project owner email and password.',password:'Password',passwordPlaceholder:'At least 8 characters',remember:'Remember me',forgot:'Forgot password?',submit:'Sign in',working:'Signing in…',noProject:'No project yet?',create:'Create workspace',validation:'Enter a valid email and a password of at least 8 characters.',invalid:'Incorrect email or password.',failed:'Unable to sign in. Please try again.'}};
+const form=document.getElementById('loginForm'),alertBox=document.getElementById('alert'),button=document.getElementById('submitButton');
+function c(){return copy[LkUniI18n.current()]||copy.ru}function render(){const t=c();document.title=t.title;eyebrow.textContent=t.eyebrow;title.textContent=t.heading;lead.textContent=t.lead;passwordLabel.textContent=t.password;password.placeholder=t.passwordPlaceholder;rememberText.textContent=t.remember;forgotLink.textContent=t.forgot;button.textContent=t.submit;noProject.textContent=t.noProject;createLink.textContent=t.create}LkUniI18n.bindButton(document.getElementById('lang'));document.addEventListener('lkuni:language',render);render();
+function showError(message){alertBox.textContent=message;alertBox.classList.remove('hidden')}function clearStoredSession(){['lkuni.accessToken','lkuni.refreshToken','lkuni.user','lkuni.workspace'].forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)})}function storeSession(data,remember){clearStoredSession();const storage=remember?localStorage:sessionStorage;storage.setItem('lkuni.accessToken',data.tokens?.accessToken||data.accessToken||'');storage.setItem('lkuni.refreshToken',data.tokens?.refreshToken||data.refreshToken||'');storage.setItem('lkuni.user',JSON.stringify(data.user||data.owner||{}));storage.setItem('lkuni.workspace',JSON.stringify(data.workspace||{}))}
+form.addEventListener('submit',async(event)=>{event.preventDefault();alertBox.classList.add('hidden');const email=document.getElementById('email').value.trim();const pass=document.getElementById('password').value;if(!/^\S+@\S+\.\S+$/.test(email)||pass.length<8){showError(c().validation);return}button.disabled=true;button.textContent=c().working;try{const response=await fetch('/api/v1/auth/password-login',{method:'POST',headers:{'content-type':'application/json','x-device-name':'Lk_uni Web'},body:JSON.stringify({email,password:pass})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||c().invalid);storeSession(data,document.getElementById('remember').checked);location.href='/workspace/'}catch(error){showError(error.message||c().failed)}finally{button.disabled=false;button.textContent=c().submit}});
 </script>
 </body>
 </html>
