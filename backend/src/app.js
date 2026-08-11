@@ -3,6 +3,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { createAuthRouter } = require('./modules/auth/auth.routes');
 const { createProjectRouter } = require('./modules/projects/project.routes');
+const { createProfileRouter } = require('./modules/profile/profile.routes');
 
 function createApp({ db }) {
   const app = express();
@@ -27,6 +28,7 @@ function createApp({ db }) {
 
   app.use('/api/v1/projects', createProjectRouter({ db }));
   app.use('/api/v1/auth', authLimiter, createAuthRouter({ db }));
+  app.use('/api/v1/profile', createProfileRouter({ db }));
 
   const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
   const loginDirectory = path.resolve(__dirname, '../../prototype/login');
