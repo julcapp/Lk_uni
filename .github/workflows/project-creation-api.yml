@@ -6,10 +6,14 @@ on:
       - feature/project-creation-api-v1
     paths:
       - "backend/**"
+      - "prototype/**"
+      - "docs/testing/**"
       - ".github/workflows/project-creation-api.yml"
   pull_request:
     paths:
       - "backend/**"
+      - "prototype/**"
+      - "docs/testing/**"
       - ".github/workflows/project-creation-api.yml"
 
 permissions:
@@ -45,6 +49,7 @@ jobs:
       JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-characters
       CHALLENGE_SECRET: test-challenge-secret-at-least-32-characters
       PROJECT_TEST_DATABASE: real
+      AUTH_DEMO_MODE: "true"
 
     defaults:
       run:
@@ -69,6 +74,9 @@ jobs:
 
       - name: Run Project Creation integration test
         run: npm run project:test
+
+      - name: Run Milestone 1 acceptance smoke test
+        run: npm run acceptance:smoke
 
       - name: Check database connection
         run: npm run db:check
