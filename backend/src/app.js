@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const { createAuthRouter } = require('./modules/auth/auth.routes');
 const { createProjectRouter } = require('./modules/projects/project.routes');
 const { createProfileRouter } = require('./modules/profile/profile.routes');
+const { createOrganizationRouter } = require('./modules/organization/organization.routes');
 
 function createApp({ db }) {
   const app = express();
@@ -29,15 +30,20 @@ function createApp({ db }) {
   app.use('/api/v1/projects', createProjectRouter({ db }));
   app.use('/api/v1/auth', authLimiter, createAuthRouter({ db }));
   app.use('/api/v1/profile', createProfileRouter({ db }));
+  app.use('/api/v1/organization', createOrganizationRouter({ db }));
 
   const wizardDirectory = path.resolve(__dirname, '../../prototype/project-wizard');
   const loginDirectory = path.resolve(__dirname, '../../prototype/login');
   const workspaceDirectory = path.resolve(__dirname, '../../prototype/workspace');
+  const profileDirectory = path.resolve(__dirname, '../../prototype/profile');
+  const organizationDirectory = path.resolve(__dirname, '../../prototype/organization');
   const forgotPasswordDirectory = path.resolve(__dirname, '../../prototype/forgot-password');
   const resetPasswordDirectory = path.resolve(__dirname, '../../prototype/reset-password');
   app.use('/create-project', express.static(wizardDirectory));
   app.use('/login', express.static(loginDirectory));
   app.use('/workspace', express.static(workspaceDirectory));
+  app.use('/profile', express.static(profileDirectory));
+  app.use('/organization', express.static(organizationDirectory));
   app.use('/forgot-password', express.static(forgotPasswordDirectory));
   app.use('/reset-password', express.static(resetPasswordDirectory));
   app.get('/', (req, res) => res.redirect('/login/'));
