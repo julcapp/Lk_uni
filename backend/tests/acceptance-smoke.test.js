@@ -38,8 +38,11 @@ async function main() {
       assert.match(response.headers['content-type'] || '', /text\/html/);
       assert.match(response.text, /Lk_uni/);
       assert.match(response.text, /\/shared\/i18n\.js/, `${path} must load shared localization`);
-      assert.match(response.text, /data-i18n=/, `${path} must contain localizable UI nodes`);
+      assert.match(response.text, /(?:copy|translations|messages)\s*=\s*\{\s*ru\s*:/, `${path} must define Russian UI copy`);
+      assert.match(response.text, /(?:copy|translations|messages)\s*=\s*\{[\s\S]*?en\s*:/, `${path} must define English UI copy`);
+      assert.match(response.text, /LkUniI18n/, `${path} must use shared localization runtime`);
     }
+
     const i18n = await request(app).get('/shared/i18n.js').expect(200);
     assert.match(i18n.headers['content-type'] || '', /javascript/);
     assert.match(i18n.text, /lkuni\.language/);
