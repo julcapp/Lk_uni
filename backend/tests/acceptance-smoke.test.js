@@ -25,6 +25,16 @@ async function createDatabase() {
   return db;
 }
 
+function assertLocalizedPage(path, html) {
+  assert.match(html, /Lk_uni/);
+  assert.match(html, /\/shared\/i18n\.js/, `${path} must load shared localization`);
+  assert.match(html, /LkUniI18n/, `${path} must use shared localization runtime`);
+  const dictionary = html.match(/(?:const|let|var)\s+(?:copy|translations|messages|T)\s*=\s*(\{[\s\S]*?\});/);
+  assert.ok(dictionary, `${path} must define a UI translation dictionary`);
+  assert.match(dictionary[1], /(?:^|[,{])\s*ru\s*:/, `${path} must define Russian UI copy`);
+  assert.match(dictionary[1], /(?:^|[,{])\s*en\s*:/, `${path} must define English UI copy`);
+}
+
 async function main() {
   const db = await createDatabase();
   const { createApp } = require('../src/app');
@@ -36,11 +46,7 @@ async function main() {
     for (const path of uiRoutes) {
       const response = await request(app).get(path).expect(200);
       assert.match(response.headers['content-type'] || '', /text\/html/);
-      assert.match(response.text, /Lk_uni/);
-      assert.match(response.text, /\/shared\/i18n\.js/, `${path} must load shared localization`);
-      assert.match(response.text, /(?:copy|translations|messages)\s*=\s*\{\s*ru\s*:/, `${path} must define Russian UI copy`);
-      assert.match(response.text, /(?:copy|translations|messages)\s*=\s*\{[\s\S]*?en\s*:/, `${path} must define English UI copy`);
-      assert.match(response.text, /LkUniI18n/, `${path} must use shared localization runtime`);
+      assertLocalizedPage(path, response.text);
     }
 
     const i18n = await request(app).get('/shared/i18n.js').expect(200);
