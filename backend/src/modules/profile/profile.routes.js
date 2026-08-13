@@ -12,6 +12,42 @@ function requireFields(body, fields) {
   }
 }
 
+function validationError(code, message) {
+  const error = new Error(message);
+  error.status = 400;
+  error.code = code;
+  return error;
+}
+
+function validateDisplayName(value, language = 'ru') {
+  const name = String(value || '').trim();
+  if (!name) throw validationError('DISPLAY_NAME_REQUIRED', language === 'en' ? 'Enter your display name.' : 'Введите отображаемое имя.');
+  if (name.length < 2 || name.length > 120) throw validationError('DISPLAY_NAME_LENGTH', language === 'en' ? 'The name must contain 2 to 120 characters.' : 'Имя должно содержать от 2 до 120 символов.');
+  if (!/^[\p{L}\p{M} .’'\-]+$/u.test(name)) throw validationError('DISPLAY_NAME_CHARACTERS', language === 'en' ? 'Use letters, spaces, hyphens or apostrophes in the name.' : 'В имени используйте буквы, пробелы, дефисы или апострофы.');
+
+  const hasCyrillic = /\p{Script=Cyrillic}/u.test(name);
+  const hasLatin = /\p{Script=Latin}/u.test(name);
+  if (hasCyrillic && hasLatin) {
+    throw validationError('DISPLAY_NAME_MIXED_ALPHABETS', language === 'en'
+      ? 'Do not mix Cyrillic and Latin letters in one name.'
+      : 'Не смешивайте кириллицу и латиницу в одном имени.');
+  }
+  if (language === 'ru' && hasLatin) {
+    throw validationError('DISPLAY_NAME_LANGUAGE_MISMATCH', 'При русском интерфейсе используйте кириллицу для имени. Переключите интерфейс на EN, если имя нужно указать латиницей.');
+  }
+  if (language === 'en' && hasCyrillic) {
+    throw validationError('DISPLAY_NAME_LANGUAGE_MISMATCH', 'With the English interface, use Latin letters for the name. Switch the interface to RU to enter the name in Cyrillic.');
+  }
+  return name;
+}
+
+async function profileLanguage(db, auth) {
+  const settings = await db('user_settings')
+    .where({ user_id: auth.sub, project_id: auth.projectId })
+    .first();
+  return settings?.language === 'en' ? 'en' : 'ru';
+}
+
 function createProfileRouter({ db }) {
   const router = express.Router();
   router.use(authenticate);
@@ -21,7 +57,13 @@ function createProfileRouter({ db }) {
   });
 
   router.patch('/', async (req, res, next) => {
-    try { res.json(await service.updateProfile(db, req.auth, req.body || {})); } catch (error) { next(error); }
+    try {
+      if (Object.prototype.hasOwnProperty.call(req.body || {}, 'displayName')) {
+        const language = await profileLanguage(db, req.auth);
+        req.body.displayName = validateDisplayName(req.body.displayName, language);
+      }
+      res.json(await service.updateProfile(db, req.auth, req.body || {}));
+    } catch (error) { next(error); }
   });
 
   router.get('/settings', async (req, res, next) => {
