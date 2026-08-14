@@ -1,21 +1,26 @@
-name: PostgreSQL Foundation
+name: Project Creation API
 
 on:
   push:
     branches:
-      - feature/postgresql-foundation
-      - feature/auth-core-v1
+      - feature/project-creation-api-v1
+    paths:
+      - "backend/**"
+      - "prototype/**"
+      - "docs/testing/**"
+      - ".github/workflows/project-creation-api.yml"
   pull_request:
     paths:
       - "backend/**"
-      - "docker-compose.postgres.yml"
-      - ".github/workflows/postgresql-foundation.yml"
+      - "prototype/**"
+      - "docs/testing/**"
+      - ".github/workflows/project-creation-api.yml"
 
 permissions:
   contents: read
 
 jobs:
-  migration:
+  project-creation:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -40,9 +45,10 @@ jobs:
       DATABASE_SSL: "false"
       DB_POOL_MIN: 1
       DB_POOL_MAX: 4
-      JWT_ACCESS_SECRET: ci-access-secret-at-least-32-characters
-      JWT_REFRESH_SECRET: ci-refresh-secret-at-least-32-characters
-      CHALLENGE_SECRET: ci-challenge-secret-at-least-32-characters
+      JWT_ACCESS_SECRET: test-access-secret-at-least-32-characters
+      JWT_REFRESH_SECRET: test-refresh-secret-at-least-32-characters
+      CHALLENGE_SECRET: test-challenge-secret-at-least-32-characters
+      PROJECT_TEST_DATABASE: real
       AUTH_DEMO_MODE: "true"
 
     defaults:
@@ -60,32 +66,20 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install backend dependencies
+      - name: Install dependencies
         run: npm ci
 
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
 
-      - name: Run in-memory migration contract test
-        run: npm run db:test
-
-      - name: Run in-memory Auth Core integration test
-        run: npm run auth:test
-
-      - name: Apply migrations to PostgreSQL 16
+      - name: Apply migrations
         run: npm run db:migrate
 
-      - name: Seed DevHub
-        run: npm run db:seed
+      - name: Run Project Creation integration test
+        run: npm run project:test
 
-      - name: Run Auth Core integration test on PostgreSQL 16
-        run: AUTH_TEST_DATABASE=real npm run auth:test
+      - name: Run Milestone 1 acceptance smoke test
+        run: npm run acceptance:smoke
 
-      - name: Check PostgreSQL connection
+      - name: Check database connection
         run: npm run db:check
-
-      - name: Roll back migration
-        run: npm run db:rollback
-
-      - name: Re-apply migration after rollback
-        run: npm run db:migrate

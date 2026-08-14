@@ -1,7 +1,10 @@
+const path = require('node:path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { createAuthRouter } = require('./modules/auth/auth.routes');
 const { createProjectRouter } = require('./modules/projects/project.routes');
+const { createProfileRouter } = require('./modules/profile/profile.routes');
+const { createOrganizationRouter } = require('./modules/organization/organization.routes');
 
 function createApp({ db }) {
   const app = express();
@@ -26,6 +29,27 @@ function createApp({ db }) {
 
   app.use('/api/v1/projects', createProjectRouter({ db }));
   app.use('/api/v1/auth', authLimiter, createAuthRouter({ db }));
+  app.use('/api/v1/profile', createProfileRouter({ db }));
+  app.use('/api/v1/organization', createOrganizationRouter({ db }));
+
+  const prototypeDirectory = path.resolve(__dirname, '../../prototype');
+  const wizardDirectory = path.resolve(prototypeDirectory, 'project-wizard');
+  const loginDirectory = path.resolve(prototypeDirectory, 'login');
+  const workspaceDirectory = path.resolve(prototypeDirectory, 'workspace');
+  const profileDirectory = path.resolve(prototypeDirectory, 'profile');
+  const organizationDirectory = path.resolve(prototypeDirectory, 'organization');
+  const forgotPasswordDirectory = path.resolve(prototypeDirectory, 'forgot-password');
+  const resetPasswordDirectory = path.resolve(prototypeDirectory, 'reset-password');
+
+  app.get('/shared/i18n.js', (req, res) => res.sendFile(path.resolve(prototypeDirectory, 'i18n.js')));
+  app.use('/create-project', express.static(wizardDirectory));
+  app.use('/login', express.static(loginDirectory));
+  app.use('/workspace', express.static(workspaceDirectory));
+  app.use('/profile', express.static(profileDirectory));
+  app.use('/organization', express.static(organizationDirectory));
+  app.use('/forgot-password', express.static(forgotPasswordDirectory));
+  app.use('/reset-password', express.static(resetPasswordDirectory));
+  app.get('/', (req, res) => res.redirect('/login/'));
 
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);

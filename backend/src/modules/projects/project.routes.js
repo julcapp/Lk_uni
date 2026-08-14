@@ -1,12 +1,30 @@
 const express = require('express');
+const { createWorkspace } = require('./project-creation.service');
 
 function parseJson(value, fallback) {
   if (value == null) return fallback;
   return typeof value === 'string' ? JSON.parse(value) : value;
 }
 
+function requestMeta(req) {
+  return {
+    ip: req.ip,
+    userAgent: req.get('user-agent') || null,
+    deviceName: req.get('x-device-name') || null,
+  };
+}
+
 function createProjectRouter({ db }) {
   const router = express.Router();
+
+  router.post('/', async (req, res, next) => {
+    try {
+      const result = await createWorkspace(db, req.body || {}, requestMeta(req));
+      return res.status(201).json({ ok: true, ...result });
+    } catch (error) {
+      return next(error);
+    }
+  });
 
   router.get('/public/:slug', async (req, res, next) => {
     try {
